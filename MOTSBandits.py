@@ -122,7 +122,7 @@ class ParetoUCB1Bandit:
         self.kappa = kappa
         self.n = 0
         self.arm_means = np.zeros((num_arms, num_objectives))
-        self.arm_counts = np.zeros(num_arms)
+        self.arm_counts = np.zeros((num_arms, num_objectives))
         self.current_init_arm = 0
 
     def choose_arm(self):
@@ -160,5 +160,5 @@ class ParetoUCB1Bandit:
         """
         self.n = 0
         self.arm_means = np.zeros((self.num_arms, self.num_objectives))
-        self.arm_counts = np.zeros(self.num_arms)
+        self.arm_counts = np.zeros((self.num_arms, self.num_objectives))
         self.current_init_arm = 0
