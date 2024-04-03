@@ -5,7 +5,7 @@ import MOTSBandits
 import helpers
 import plotting
 
-num_experiments = 1000  # Number of experiments M
+num_experiments = 100  # Number of experiments M
 horizon = 1000  # Number of time steps T
 num_objectives = 5  # Number of objectives K
 num_optimal = 7  # Number of optimal arms
