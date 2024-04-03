@@ -19,13 +19,17 @@ def plot_regrets(setup_dict):
         avg_cumulative_unfairness_regrets = np.mean(cumulative_unfairness_regrets, axis=0)
         std_cumulative_unfairness_regrets = np.std(cumulative_unfairness_regrets, axis=0)
         axs[0].plot(avg_cumulative_pareto_regrets, label=f"{algorithm}")
+        # Plot the 95% confidence interval for the cumulative pareto regrets
         axs[0].fill_between(range(len(avg_cumulative_pareto_regrets)),
-                            avg_cumulative_pareto_regrets - std_cumulative_pareto_regrets,
-                            avg_cumulative_pareto_regrets + std_cumulative_pareto_regrets, alpha=0.2)
+                            avg_cumulative_pareto_regrets - 1.96 * std_cumulative_pareto_regrets / np.sqrt(len(cumulative_pareto_regrets)),
+                            avg_cumulative_pareto_regrets + 1.96 * std_cumulative_pareto_regrets / np.sqrt(len(cumulative_pareto_regrets)),
+                            alpha=0.2)
         axs[1].plot(avg_cumulative_unfairness_regrets, label=f"{algorithm}")
+        # Plot the 95% confidence interval for the cumulative unfairness regrets
         axs[1].fill_between(range(len(avg_cumulative_unfairness_regrets)),
-                            avg_cumulative_unfairness_regrets - std_cumulative_unfairness_regrets,
-                            avg_cumulative_unfairness_regrets + std_cumulative_unfairness_regrets, alpha=0.2)
+                            avg_cumulative_unfairness_regrets - 1.96 * std_cumulative_unfairness_regrets / np.sqrt(len(cumulative_unfairness_regrets)),
+                            avg_cumulative_unfairness_regrets + 1.96 * std_cumulative_unfairness_regrets / np.sqrt(len(cumulative_unfairness_regrets)),
+                            alpha=0.2)
     axs[0].set_title("Cumulative Pareto Regrets")
     axs[0].set_xlabel("Time steps")
     axs[0].set_ylabel("Cumulative Pareto Regret")
