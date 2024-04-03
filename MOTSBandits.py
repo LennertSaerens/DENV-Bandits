@@ -110,7 +110,7 @@ class LinearScalarizedThompsonSamplingBandit:
         self.betas = np.ones((self.num_scalarization_functions, self.num_arms, self.num_objectives))
 
 
-class ParetoUCB1:
+class ParetoUCB1Bandit:
     """
     Pareto UCB1 Bandit
     From "Designing multi-objective multi-armed bandits algorithms: a study" by Madalina M. Drugan and Ann Nowe
