@@ -4,7 +4,8 @@ import random
 
 class ParetoThompsonSamplingBandit:
     """
-    Pareto Thompson Sampling Bandit
+    Pareto Thompson Sampling Bandit (PTS)
+    From "Thompson Sampling for Multi-Objective Multi-Armed Bandits Problem" by Saba Yahyaa and Bernard Manderick
     """
 
     def __init__(self, num_arms, num_objectives):
@@ -59,7 +60,8 @@ class ParetoThompsonSamplingBandit:
 
 class LinearScalarizedThompsonSamplingBandit:
     """
-    Linear Scalarized Thompson Sampling Bandit
+    Linear Scalarized Thompson Sampling Bandit (LSF-TS)
+    From "Thompson Sampling for Multi-Objective Multi-Armed Bandits Problem" by Saba Yahyaa and Bernard Manderick
     """
 
     def __init__(self, num_arms, num_objectives, scalarization_functions):
