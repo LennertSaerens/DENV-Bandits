@@ -5,7 +5,7 @@ import MOTSBandits
 import helpers
 import plotting
 
-num_experiments = 1000  # Number of experiments M
+num_experiments = 100  # Number of experiments M
 horizon = 1000  # Number of time steps T
 num_objectives = 5  # Number of objectives K
 num_optimal = 7  # Number of optimal arms
@@ -83,7 +83,12 @@ def main(log=False):
             "agent": MOTSBandits.LinearScalarizedThompsonSamplingBandit(num_arms, num_objectives, W),
             "cumulative_pareto_regrets": [[] for _ in range(num_experiments)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_experiments)]
-        }
+        },
+        "Pareto UCB1": {
+            "agent": MOTSBandits.ParetoUCB1Bandit(num_arms, num_objectives, 1),
+            "cumulative_pareto_regrets": [[] for _ in range(num_experiments)],
+            "cumulative_unfairness_regrets": [[] for _ in range(num_experiments)]
+        },
     }
 
     for algorithm in setup:
