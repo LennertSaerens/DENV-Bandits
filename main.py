@@ -6,7 +6,7 @@ import helpers
 import plotting
 
 num_runs = 100  # Number of experiments M
-horizon = 1000  # Number of time steps T
+horizon = 2000  # Number of time steps T
 
 # Configuration for the first experiment
 e1_arms = [(0.55, 0.5), (0.53, 0.51), (0.52, 0.54), (0.5, 0.57), (0.51, 0.51), (0.5, 0.5)] + 14 * [(0.48, 0.48)]
