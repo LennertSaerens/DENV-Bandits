@@ -112,7 +112,7 @@ class LinearScalarizedThompsonSamplingBandit:
 
 class ParetoUCB1Bandit:
     """
-    Pareto UCB1 Bandit
+    Empirical Pareto UCB1 Bandit
     From "Designing multi-objective multi-armed bandits algorithms: a study" by Madalina M. Drugan and Ann Nowe
     """
 
