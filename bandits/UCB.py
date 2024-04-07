@@ -69,7 +69,7 @@ class ScalarizedUCB1Bandit:
         self.scalarization_functions = scalarization_functions
         self.num_scalarization_functions = len(scalarization_functions)
         self.kappa = kappa
-        self.n = 0
+        self.n = np.zeros(self.num_scalarization_functions)
         self.arm_means = np.zeros((self.num_scalarization_functions, num_arms, num_objectives))
         self.arm_counts = np.zeros((self.num_scalarization_functions, num_arms))
         self.current_init_arm = 0
@@ -85,7 +85,7 @@ class ScalarizedUCB1Bandit:
             # Pick a random scalarization function
             function = random.choice(range(self.num_scalarization_functions))
             scalarized_means = np.dot(self.arm_means[function], self.scalarization_functions[function])
-            ucb_values = scalarized_means + self.kappa * np.sqrt(2 * math.log(self.n) / self.arm_counts[function])
+            ucb_values = scalarized_means + self.kappa * np.sqrt(2 * math.log(self.n[function]) / self.arm_counts[function])
             arm = np.argmax(ucb_values)
         else:
             function = self.current_init_function
@@ -95,7 +95,7 @@ class ScalarizedUCB1Bandit:
                 self.current_init_arm = 0
                 self.current_init_function += 1
         self.arm_counts[function][arm] += 1
-        self.n += 1
+        self.n[function] += 1
         self.MRU = function
         return arm
 
@@ -113,7 +113,7 @@ class ScalarizedUCB1Bandit:
         Reset the agent.
         :return: None
         """
-        self.n = 0
+        self.n = np.zeros(self.num_scalarization_functions)
         self.arm_means = np.zeros((self.num_scalarization_functions, self.num_arms, self.num_objectives))
         self.arm_counts = np.zeros((self.num_scalarization_functions, self.num_arms))
         self.current_init_arm = 0
