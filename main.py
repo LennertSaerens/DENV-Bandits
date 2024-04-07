@@ -1,8 +1,8 @@
 # Implementation of experiments with Thomson Sampling for Multi-Objective Multi-Armed Bandits
 import numpy as np
-
-import MOTSBandits
 import plotting
+from bandits.ThompsonSampling import ParetoThompsonSamplingBandit, LinearScalarizedThompsonSamplingBandit
+from bandits.UCB import ParetoUCB1Bandit
 
 num_runs = 100  # Number of experiments M
 horizon = 2000  # Number of time steps T
@@ -71,17 +71,17 @@ def pull(arm, arms, num_objectives):
 def run_experiment(num_arms, num_objectives, arms, pareto_arms, weights, log=False):
     setup = {
         "Pareto Thompson Sampling": {
-            "agent": MOTSBandits.ParetoThompsonSamplingBandit(num_arms, num_objectives),
+            "agent": ParetoThompsonSamplingBandit(num_arms, num_objectives),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
         },
         "Linear Scalarized Thompson Sampling": {
-            "agent": MOTSBandits.LinearScalarizedThompsonSamplingBandit(num_arms, num_objectives, weights),
+            "agent": LinearScalarizedThompsonSamplingBandit(num_arms, num_objectives, weights),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
         },
         "Pareto UCB1": {
-            "agent": MOTSBandits.ParetoUCB1Bandit(num_arms, num_objectives, 1),
+            "agent": ParetoUCB1Bandit(num_arms, num_objectives, 1),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
         },
