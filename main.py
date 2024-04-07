@@ -2,7 +2,7 @@
 import numpy as np
 import plotting
 from bandits.ThompsonSampling import ParetoThompsonSamplingBandit, LinearScalarizedThompsonSamplingBandit
-from bandits.UCB import ParetoUCB1Bandit, ScalarizedUCB1Bandit
+from bandits.UCB import ParetoUCB1Bandit, LinearScalarizedUCB1Bandit
 
 num_runs = 10  # Number of experiments M
 horizon = 5_000  # Number of time steps T
@@ -87,10 +87,10 @@ def run_experiment(num_arms, num_objectives, arms, pareto_arms, weights, log=Fal
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
         },
         "Linear Scalarized UCB1": {
-            "agent": ScalarizedUCB1Bandit(num_arms, num_objectives, weights, 1),
+            "agent": LinearScalarizedUCB1Bandit(num_arms, num_objectives, weights, 1),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
-        }
+        },
     }
 
     for algorithm in setup:
