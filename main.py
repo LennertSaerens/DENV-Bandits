@@ -2,7 +2,6 @@
 import numpy as np
 
 import MOTSBandits
-import helpers
 import plotting
 
 num_runs = 100  # Number of experiments M
@@ -29,8 +28,7 @@ def calculate_pareto_regret(arm, arms, pareto_arms):
     if arm in pareto_arms:
         return 0
     else:
-        pareto_distances = [np.sqrt(sum((np.array(arms[arm]) - np.array(arms[pareto_arm])) ** 2)) for pareto_arm in
-                            pareto_arms]
+        pareto_distances = [np.sqrt(sum((np.array(arms[arm]) - np.array(arms[pareto_arm])) ** 2)) for pareto_arm in pareto_arms]
         return min(pareto_distances)
 
 
