@@ -84,7 +84,7 @@ class ScalarizedUCB1Bandit:
         if np.all(self.arm_counts > 0):
             # Pick a random scalarization function
             function = random.choice(range(self.num_scalarization_functions))
-            scalarized_means = np.dot(self.arm_means[function], self.scalarization_functions[function])
+            scalarized_means = self.scalarize(self.arm_means[function], self.scalarization_functions[function])
             ucb_values = scalarized_means + self.kappa * np.sqrt(2 * math.log(self.n[function]) / self.arm_counts[function])
             arm = np.argmax(ucb_values)
         else:
@@ -98,6 +98,9 @@ class ScalarizedUCB1Bandit:
         self.n[function] += 1
         self.MRU = function
         return arm
+
+    def scalarize(self, mu, w) -> float:
+        pass
 
     def learn(self, arm, reward):
         """
@@ -119,3 +122,27 @@ class ScalarizedUCB1Bandit:
         self.current_init_arm = 0
         self.current_init_function = 0
         self.MRU = False
+
+
+class LinearScalarizedUCB1Bandit(ScalarizedUCB1Bandit):
+    """
+    Linear Scalarized UCB1 Bandit
+    """
+    def __init__(self, num_arms, num_objectives, scalarization_functions, kappa):
+        super().__init__(num_arms, num_objectives, scalarization_functions, kappa)
+
+    def scalarize(self, mu, w):
+        return np.dot(mu, w)
+
+
+class ChebyshevScalarizedUCB1Bandit(ScalarizedUCB1Bandit):
+    """
+    Chebyshev Scalarized UCB1 Bandit
+    """
+    def __init__(self, num_arms, num_objectives, scalarization_functions, kappa, eps):
+        super().__init__(num_arms, num_objectives, scalarization_functions, kappa)
+        self.eps = eps
+
+    def scalarize(self, mu, w):
+        diff = np.min(mu - self.eps)
+        return np.min(w * (mu - diff))
