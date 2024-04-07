@@ -13,6 +13,7 @@ e1_num_arms = len(e1_arms)
 e1_num_objectives = len(e1_arms[0])
 e1_pareto_arms = [0, 1, 2, 3]
 e1_weights = [(x, 1 - x) for x in np.linspace(0, 1, 11)]
+e1_cheby_refs = np.random.uniform(0, 0.1, 2)
 
 
 def calculate_pareto_regret(arm, arms, pareto_arms):
@@ -75,7 +76,7 @@ def run_experiment(num_arms, num_objectives, arms, pareto_arms, weights, log=Fal
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
         },
-        "Scalarized Thompson Sampling": {
+        "Linear Scalarized Thompson Sampling": {
             "agent": LinearScalarizedThompsonSamplingBandit(num_arms, num_objectives, weights),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
@@ -85,7 +86,7 @@ def run_experiment(num_arms, num_objectives, arms, pareto_arms, weights, log=Fal
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
         },
-        "Scalarized UCB1": {
+        "Linear Scalarized UCB1": {
             "agent": ScalarizedUCB1Bandit(num_arms, num_objectives, weights, 1),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
