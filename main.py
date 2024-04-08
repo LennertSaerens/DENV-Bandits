@@ -13,7 +13,7 @@ e1_num_arms = len(e1_arms)
 e1_num_objectives = len(e1_arms[0])
 e1_pareto_arms = [0, 1, 2, 3]
 e1_weights = [(x, 1 - x) for x in np.linspace(0, 1, 11)]
-e1_cheby_refs = np.random.uniform(0, 0.1, 2)
+e1_cheby_ref = (0.47, 0.47)
 
 
 def calculate_pareto_regret(arm, arms, pareto_arms):
