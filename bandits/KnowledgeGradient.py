@@ -90,7 +90,7 @@ class LSKGArmsBandit:
         self.t = 0
         self.arm_means = np.zeros((num_arms, num_objectives))
         self.arm_stds = np.zeros((num_arms, num_objectives))
-        self.arm_pulls = np.zeros((num_arms, num_objectives))
+        self.arm_pulls = np.zeros(num_arms)
         self.current_init_arm = 0
         self.current_init_phase = 0
 
@@ -106,8 +106,9 @@ class LSKGArmsBandit:
                 self.current_init_arm = 0
                 self.current_init_phase += 1
         else:
-            scalarized_means = np.dot(self.arm_means, self.scalarization_functions)
-            scalarized_stds = np.dot(self.arm_stds, self.scalarization_functions)
+            function = random.choice(range(len(self.scalarization_functions)))
+            scalarized_means = np.dot(self.arm_means, self.scalarization_functions[function])
+            scalarized_stds = np.dot(self.arm_stds, self.scalarization_functions[function])
             kg_values = scalarized_means + (
                     (self.timesteps - self.t) *
                     (self.num_arms * self.num_objectives) *
@@ -136,6 +137,6 @@ class LSKGArmsBandit:
         self.t = 0
         self.arm_means = np.zeros((self.num_arms, self.num_objectives))
         self.arm_stds = np.zeros((self.num_arms, self.num_objectives))
-        self.arm_pulls = np.zeros((self.num_arms, self.num_objectives))
+        self.arm_pulls = np.zeros(self.num_arms)
         self.current_init_arm = 0
         self.current_init_phase = 0
