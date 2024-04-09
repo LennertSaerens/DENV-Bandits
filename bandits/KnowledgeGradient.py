@@ -9,7 +9,7 @@ def x(zeta):
     return zeta * Phi(zeta) + phi(zeta)
 
 
-class ParetoKnowledgeGradientBandit:
+class PKGBandit:
     """
     Implementation of the Pareto Knowledge Gradient algorithm.
     From "Knowledge Gradient for Multi-objective Multi-armed Bandit Algorithms"
