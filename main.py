@@ -3,7 +3,7 @@ import numpy as np
 import plotting
 from bandits.ThompsonSampling import ParetoThompsonSamplingBandit, LinearScalarizedThompsonSamplingBandit
 from bandits.UCB import ParetoUCB1Bandit, LinearScalarizedUCB1Bandit
-from bandits.KnowledgeGradient import PKGBandit, LSKGArmsBandit
+from bandits.KnowledgeGradient import PKGBandit, LSKGArmsBandit, LSKGObjectivesBandit
 
 num_runs = 10  # Number of experiments M
 horizon = 50_000  # Number of time steps T
@@ -99,6 +99,11 @@ def run_experiment(num_arms, num_objectives, arms, pareto_arms, weights, log=Fal
         },
         "Linear Scalarized Knowledge Gradient (arms)": {
             "agent": LSKGArmsBandit(num_arms, num_objectives, horizon, 5, weights),
+            "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
+            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
+        },
+        "Linear Scalarized Knowledge Gradient (objectives)": {
+            "agent": LSKGObjectivesBandit(num_arms, num_objectives, horizon, 5, weights),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
         }
