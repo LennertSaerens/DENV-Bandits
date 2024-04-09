@@ -144,7 +144,7 @@ class LSKGArmsBandit:
 
 class LSKGObjectivesBandit:
     """
-    Implementation of the Linear Scalarized Knowledge Gradient across objectives algorithm.
+    Implementation of the Linear Scalarized Knowledge Gradient across objectives.
     From "Knowledge Gradient for Multi-objective Multi-armed Bandit Algorithms"
     by Saba Q. Yahyaa, Madalina M. Drugan and Bernard Manderick
     """
@@ -157,7 +157,7 @@ class LSKGObjectivesBandit:
         self.t = 0
         self.arm_means = np.zeros((num_arms, num_objectives))
         self.arm_stds = np.zeros((num_arms, num_objectives))
-        self.arm_pulls = np.zeros(num_arms)
+        self.arm_pulls = np.zeros((num_arms, num_objectives))
         self.current_init_arm = 0
         self.current_init_phase = 0
 
@@ -203,6 +203,6 @@ class LSKGObjectivesBandit:
         self.t = 0
         self.arm_means = np.zeros((self.num_arms, self.num_objectives))
         self.arm_stds = np.zeros((self.num_arms, self.num_objectives))
-        self.arm_pulls = np.zeros(self.num_arms)
+        self.arm_pulls = np.zeros((self.num_arms, self.num_objectives))
         self.current_init_arm = 0
         self.current_init_phase = 0
