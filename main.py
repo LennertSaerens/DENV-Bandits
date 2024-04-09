@@ -3,6 +3,7 @@ import numpy as np
 import plotting
 from bandits.ThompsonSampling import ParetoThompsonSamplingBandit, LinearScalarizedThompsonSamplingBandit
 from bandits.UCB import ParetoUCB1Bandit, LinearScalarizedUCB1Bandit
+from bandits.KnowledgeGradient import ParetoKnowledgeGradientBandit
 
 num_runs = 10  # Number of experiments M
 horizon = 5_000  # Number of time steps T
@@ -91,6 +92,11 @@ def run_experiment(num_arms, num_objectives, arms, pareto_arms, weights, log=Fal
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
         },
+        "Pareto Knowledge Gradient": {
+            "agent": ParetoKnowledgeGradientBandit(num_arms, num_objectives, horizon, 5),
+            "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
+            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
+        }
     }
 
     for algorithm in setup:
