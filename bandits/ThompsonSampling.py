@@ -2,7 +2,7 @@ import random
 import numpy as np
 
 
-class ParetoThompsonSamplingBandit:
+class PTSBandit:
     """
     Pareto Thompson Sampling Bandit (PTS)
     From "Thompson Sampling for Multi-Objective Multi-Armed Bandits Problem" by Saba Yahyaa and Bernard Manderick
@@ -58,7 +58,7 @@ class ParetoThompsonSamplingBandit:
         self.betas = np.ones((self.num_arms, self.num_objectives))
 
 
-class LinearScalarizedThompsonSamplingBandit:
+class LSTSBandit:
     """
     Linear Scalarized Thompson Sampling Bandit (LSF-TS)
     From "Thompson Sampling for Multi-Objective Multi-Armed Bandits Problem" by Saba Yahyaa and Bernard Manderick

@@ -1,12 +1,12 @@
 # Implementation of experiments with Thomson Sampling for Multi-Objective Multi-Armed Bandits
 import numpy as np
 import plotting
-from bandits.ThompsonSampling import ParetoThompsonSamplingBandit, LinearScalarizedThompsonSamplingBandit
-from bandits.UCB import ParetoUCB1Bandit, LinearScalarizedUCB1Bandit
+from bandits.ThompsonSampling import PTSBandit, LSTSBandit
+from bandits.UCB import PUCB1Bandit, LSUCB1Bandit
 from bandits.KnowledgeGradient import PKGBandit, LSKGArmsBandit, LSKGObjectivesBandit
 
 num_runs = 10  # Number of experiments M
-horizon = 50_000  # Number of time steps T
+horizon = 10_000  # Number of time steps T
 
 # Configuration for the first experiment
 e1_arms = [(0.55, 0.5), (0.53, 0.51), (0.52, 0.54), (0.5, 0.57), (0.51, 0.51), (0.5, 0.5)] + 14 * [(0.48, 0.48)]
@@ -73,22 +73,22 @@ def pull(arm, arms, num_objectives):
 def run_experiment(num_arms, num_objectives, arms, pareto_arms, weights, log=False):
     setup = {
         "Pareto Thompson Sampling": {
-            "agent": ParetoThompsonSamplingBandit(num_arms, num_objectives),
+            "agent": PTSBandit(num_arms, num_objectives),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
         },
         "Linear Scalarized Thompson Sampling": {
-            "agent": LinearScalarizedThompsonSamplingBandit(num_arms, num_objectives, weights),
+            "agent": LSTSBandit(num_arms, num_objectives, weights),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
         },
         "Pareto UCB1": {
-            "agent": ParetoUCB1Bandit(num_arms, num_objectives, 1),
+            "agent": PUCB1Bandit(num_arms, num_objectives, 1),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
         },
         "Linear Scalarized UCB1": {
-            "agent": LinearScalarizedUCB1Bandit(num_arms, num_objectives, weights, 1),
+            "agent": LSUCB1Bandit(num_arms, num_objectives, weights, 1),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
         },

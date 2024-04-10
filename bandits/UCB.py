@@ -3,7 +3,7 @@ import math
 import random
 
 
-class ParetoUCB1Bandit:
+class PUCB1Bandit:
     """
     Empirical Pareto UCB1 Bandit
     From "Designing multi-objective multi-armed bandits algorithms: a study" by Madalina M. Drugan and Ann Nowe
@@ -57,7 +57,7 @@ class ParetoUCB1Bandit:
         self.current_init_arm = 0
 
 
-class ScalarizedUCB1Bandit:
+class SUCB1Bandit:
     """
     Scalarized UCB1 Bandit
     From "Designing multi-objective multi-armed bandits algorithms: a study" by Madalina M. Drugan and Ann Nowe
@@ -125,7 +125,7 @@ class ScalarizedUCB1Bandit:
         self.MRU = False
 
 
-class LinearScalarizedUCB1Bandit(ScalarizedUCB1Bandit):
+class LSUCB1Bandit(SUCB1Bandit):
     """
     Linear Scalarized UCB1 Bandit
     """
@@ -137,7 +137,7 @@ class LinearScalarizedUCB1Bandit(ScalarizedUCB1Bandit):
         return np.dot(mu, w)
 
 
-class ChebyshevScalarizedUCB1Bandit(ScalarizedUCB1Bandit):
+class CSUCB1Bandit(SUCB1Bandit):
     """
     Chebyshev Scalarized UCB1 Bandit
     """
