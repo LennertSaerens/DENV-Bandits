@@ -4,9 +4,10 @@ import plotting
 from bandits.ThompsonSampling import PTSBandit, LSTSBandit
 from bandits.UCB import PUCB1Bandit, LSUCB1Bandit
 from bandits.KnowledgeGradient import PKGBandit, LSKGArmsBandit, LSKGObjectivesBandit
+from bandits.Annealing import APBandit
 
-num_runs = 10  # Number of experiments M
-horizon = 10_000  # Number of time steps T
+num_runs = 100  # Number of experiments M
+horizon = 50_000  # Number of time steps T
 
 # Configuration for the first experiment
 e1_arms = [(0.55, 0.5), (0.53, 0.51), (0.52, 0.54), (0.5, 0.57), (0.51, 0.51), (0.5, 0.5)] + 14 * [(0.48, 0.48)]
@@ -104,6 +105,11 @@ def run_experiment(num_arms, num_objectives, arms, pareto_arms, weights, log=Fal
         },
         "Linear Scalarized Knowledge Gradient (objectives)": {
             "agent": LSKGObjectivesBandit(num_arms, num_objectives, horizon, 5, weights),
+            "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
+            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
+        },
+        "Annealing Pareto": {
+            "agent": APBandit(num_arms, num_objectives, horizon, 5, 1, 0.99),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
         }
