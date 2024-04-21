@@ -32,7 +32,6 @@ df['Cost error'] = 0.3
 # Each arm is a tuple of the form (hospitalizations, hospitalizations error, costs, costs error)
 # = (mean objective 1, std objective 1, mean objective 2, std objective 2)
 arms = [(df['Hospitalizations'][i], df['Hosp error'][i], df['Costs'][i], df['Cost error'][i]) for i in range(len(df))]
-print(arms)
 
 num_arms = len(arms)
 num_objectives = len(arms[0]) // 2
