@@ -1,6 +1,11 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+# Increase the font size of the plots
+plt.rcParams.update({'font.size': 12})
+# Change the font to a fancy serif font for use in a latex document
+plt.rcParams.update({'font.family': 'serif'})
+
 
 def plot_regrets(setup_dict):
     """
