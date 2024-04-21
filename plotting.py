@@ -53,7 +53,25 @@ def plot_arms_pareto_front(arms, pareto_indices):
     for i in range(len(arms)):
         plt.annotate(i, (arms[i, 0], arms[i, 1]), textcoords="offset points", xytext=(0, 5), ha='center')
     for pareto_index in pareto_indices:
-        plt.scatter(arms[pareto_index, 0], arms[pareto_index, 1], color='green', label='Pareto optimal')
+        plt.scatter(arms[pareto_index, 0], arms[pareto_index, 1], color='green')
     plt.xlabel("Objective 1")
     plt.ylabel("Objective 2")
+    plt.title("Arms in the 2D objective space")
+    plt.show()
+
+
+def plot_arm_pulls(setup):
+    """
+    Plot the frequency of pulling each arm for each algorithm in the experimental setup.
+    :param setup: The experimental setup dictionary.
+    :return: None
+    """
+    for algorithm in setup:
+        arm_pulls = setup[algorithm]["arm_pulls"]
+        avg_arm_pulls = np.mean(arm_pulls, axis=0)
+        plt.plot(avg_arm_pulls, label=f"{algorithm}")
+    plt.xlabel("Arm")
+    plt.ylabel("Frequency")
+    plt.title("Frequency of pulling each arm")
+    plt.legend()
     plt.show()

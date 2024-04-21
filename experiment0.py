@@ -7,10 +7,10 @@ from bandits.KnowledgeGradient import PKGBandit, LSKGArmsBandit, LSKGObjectivesB
 from bandits.Annealing import APBandit
 from bandits.ThompsonSampling import NormalPTSBandit, NormalLSTSBandit
 from main import calculate_unfairness_regret
-from plotting import plot_regrets, plot_arms_pareto_front
+from plotting import plot_regrets, plot_arms_pareto_front, plot_arm_pulls
 
 # EXPERIMENTAL SETUP PARAMETERS
-num_runs = 100  # Number of experiments M
+num_runs = 10  # Number of experiments M
 horizon = 25_000  # Number of time steps T
 
 # LOADING DATA
@@ -81,42 +81,50 @@ def run_experiment(num_arms, num_objectives, arms, pareto_arms, weights, log=Fal
         "Pareto UCB1": {
             "agent": PUCB1Bandit(num_arms, num_objectives, 1),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
-            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
+            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)],
+            "arm_pulls": [np.zeros(num_arms) for _ in range(num_runs)]
         },
         "Linear Scalarized UCB1": {
             "agent": LSUCB1Bandit(num_arms, num_objectives, weights, 1),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
-            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
+            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)],
+            "arm_pulls": [np.zeros(num_arms) for _ in range(num_runs)]
         },
         "Pareto Knowledge Gradient": {
             "agent": PKGBandit(num_arms, num_objectives, horizon, 3),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
-            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
+            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)],
+            "arm_pulls": [np.zeros(num_arms) for _ in range(num_runs)]
         },
         "Linear Scalarized Knowledge Gradient (arms)": {
             "agent": LSKGArmsBandit(num_arms, num_objectives, horizon, 3, weights),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
-            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
+            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)],
+            "arm_pulls": [np.zeros(num_arms) for _ in range(num_runs)]
         },
         "Linear Scalarized Knowledge Gradient (objectives)": {
             "agent": LSKGObjectivesBandit(num_arms, num_objectives, horizon, 3, weights),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
-            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
+            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)],
+            "arm_pulls": [np.zeros(num_arms) for _ in range(num_runs)]
         },
         "Annealing Pareto": {
             "agent": APBandit(num_arms, num_objectives, horizon, 3, 1, 0.99),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
-            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
+            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)],
+            "arm_pulls": [np.zeros(num_arms) for _ in range(num_runs)]
         },
         "Pareto Thompson Sampling": {
             "agent": NormalPTSBandit(num_arms, num_objectives),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
-            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
+            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)],
+            "arm_pulls": [np.zeros(num_arms) for _ in range(num_runs)]
         },
         "Linear Scalarized Thompson Sampling": {
             "agent": NormalLSTSBandit(num_arms, num_objectives, weights),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
-            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
+            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)],
+            "arm_pulls": [np.zeros(num_arms) for _ in range(num_runs)]
         }
     }
 
@@ -127,7 +135,7 @@ def run_experiment(num_arms, num_objectives, arms, pareto_arms, weights, log=Fal
 
         for experiment in range(num_runs):
             print(f"Experiment {experiment} for algorithm {algorithm}")
-            arm_pulls = np.zeros(num_arms)  # Number of times each arm has been pulled
+            arm_pulls = setup[algorithm]["arm_pulls"][experiment]
             agent.reset()
 
             for t in range(horizon):
@@ -153,8 +161,12 @@ def run_experiment(num_arms, num_objectives, arms, pareto_arms, weights, log=Fal
                 cumulative_unfairness_regrets[experiment].append(
                     cumulative_unfairness_regrets[experiment][-1] + unfairness_regret if t > 0 else unfairness_regret)
 
+            # Store the arm pulls
+            setup[algorithm]["arm_pulls"][experiment] = arm_pulls
+
     # Plot the cumulative pareto regrets and the cumulative unfairness regrets
     plot_regrets(setup)
+    plot_arm_pulls(setup)
 
 
 if __name__ == '__main__':
