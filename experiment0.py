@@ -9,11 +9,9 @@ from bandits.ThompsonSampling import NormalPTSBandit, NormalLSTSBandit
 from main import calculate_unfairness_regret
 from plotting import plot_regrets, plot_arms_pareto_front
 
-
 # EXPERIMENTAL SETUP PARAMETERS
 num_runs = 100  # Number of experiments M
 horizon = 25_000  # Number of time steps T
-
 
 # LOADING DATA
 # use the contents of the Experiment0.csv file located in the results directory as a pandas dataframe
@@ -44,6 +42,7 @@ weights = [(x, 1 - x) for x in np.linspace(0, 1, 11)]
 # Plot the arms
 plot_arms_pareto_front(np.array([[arm[0], arm[2]] for arm in arms]), pareto_arms)
 
+
 def pull(arm, arms, num_objectives):
     """
     Pull an arm of the bandit and return the reward for each objective. The rewards ri of arm i are drawn from
@@ -71,7 +70,9 @@ def calculate_pareto_regret(arm, arms, pareto_arms):
     if arm in pareto_arms:
         return 0
     else:
-        pareto_distances = [np.sqrt((arms[pareto_arm][0] - arms[arm][0])**2 + (arms[pareto_arm][2] - arms[arm][2])**2) for pareto_arm in pareto_arms]
+        pareto_distances = [
+            np.sqrt((arms[pareto_arm][0] - arms[arm][0]) ** 2 + (arms[pareto_arm][2] - arms[arm][2]) ** 2) for
+            pareto_arm in pareto_arms]
         return min(pareto_distances)
 
 
