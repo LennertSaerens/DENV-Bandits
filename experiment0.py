@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from bandits.UCB import PUCB1Bandit, LSUCB1Bandit
 from bandits.KnowledgeGradient import PKGBandit, LSKGArmsBandit, LSKGObjectivesBandit
 from bandits.Annealing import APBandit
-from bandits.ThompsonSampling import NormalPTSBandit
+from bandits.ThompsonSampling import NormalPTSBandit, NormalLSTSBandit
 from main import calculate_unfairness_regret
 from plotting import plot_regrets
 
@@ -115,6 +115,11 @@ def run_experiment(num_arms, num_objectives, arms, pareto_arms, weights, log=Fal
         },
         "Pareto Thompson Sampling": {
             "agent": NormalPTSBandit(num_arms, num_objectives),
+            "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
+            "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
+        },
+        "Linear Scalarized Thompson Sampling": {
+            "agent": NormalLSTSBandit(num_arms, num_objectives, weights),
             "cumulative_pareto_regrets": [[] for _ in range(num_runs)],
             "cumulative_unfairness_regrets": [[] for _ in range(num_runs)]
         }
