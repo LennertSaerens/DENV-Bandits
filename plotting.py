@@ -39,3 +39,21 @@ def plot_regrets(setup_dict):
     axs[1].set_ylabel("Cumulative Unfairness Regret")
     axs[1].legend()
     plt.show()
+
+
+def plot_arms_pareto_front(arms, pareto_indices):
+    """
+    Plot the arms in the 2D objective space and highlight the Pareto front in the plot by plotting the Pareto optimal arms in a different color.
+    :param arms: The means of the arms for each objective.
+    :param pareto_indices: The indices of the Pareto optimal arms.
+    :return: None
+    """
+    plt.scatter(arms[:, 0], arms[:, 1])
+    # Annotate the arms with their index at an offset
+    for i in range(len(arms)):
+        plt.annotate(i, (arms[i, 0], arms[i, 1]), textcoords="offset points", xytext=(0, 5), ha='center')
+    for pareto_index in pareto_indices:
+        plt.scatter(arms[pareto_index, 0], arms[pareto_index, 1], color='green', label='Pareto optimal')
+    plt.xlabel("Objective 1")
+    plt.ylabel("Objective 2")
+    plt.show()

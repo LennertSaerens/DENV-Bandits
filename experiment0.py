@@ -7,7 +7,7 @@ from bandits.KnowledgeGradient import PKGBandit, LSKGArmsBandit, LSKGObjectivesB
 from bandits.Annealing import APBandit
 from bandits.ThompsonSampling import NormalPTSBandit, NormalLSTSBandit
 from main import calculate_unfairness_regret
-from plotting import plot_regrets
+from plotting import plot_regrets, plot_arms_pareto_front
 
 
 # EXPERIMENTAL SETUP PARAMETERS
@@ -31,13 +31,6 @@ df['Hosp error'] = 30
 df['Costs'] = 1 / df['Costs']
 df['Cost error'] = 0.3
 
-# plot the points in the 'Hospitalizations' and 'Costs' columns
-plt.scatter(df['Hospitalizations'], df['Costs'])
-# show the number of the row for each point
-for i in range(len(df)):
-    plt.text(df['Hospitalizations'][i], df['Costs'][i], f"{i}")
-plt.show()
-
 # Each arm is a tuple of the form (hospitalizations, hospitalizations error, costs, costs error)
 # = (mean objective 1, std objective 1, mean objective 2, std objective 2)
 arms = [(df['Hospitalizations'][i], df['Hosp error'][i], df['Costs'][i], df['Cost error'][i]) for i in range(len(df))]
@@ -48,6 +41,8 @@ num_objectives = len(arms[0]) // 2
 pareto_arms = [0, 1, 4, 10, 16]
 weights = [(x, 1 - x) for x in np.linspace(0, 1, 11)]
 
+# Plot the arms
+plot_arms_pareto_front(np.array([[arm[0], arm[2]] for arm in arms]), pareto_arms)
 
 def pull(arm, arms, num_objectives):
     """
