@@ -60,18 +60,32 @@ def plot_arms_pareto_front(arms, pareto_indices):
     plt.show()
 
 
-def plot_arm_pulls(setup):
+def plot_arm_pulls(setup, optimal_arms, total_pulls):
     """
-    Plot the frequency of pulling each arm for each algorithm in the experimental setup.
+    Plot the frequency of pulling each arm for each algorithm in the experimental setup. Each algorithm has its own subplot within the big plot with 2 rows and 4 columns.
+    Inside each subplot, the number of times the algorithm pulled each arm is plotted as a bar for each arm. Pareto optimal arms are highlighted in a different color.
+    All other arms have the same color.
+    :param total_pulls: The total number of times an arm was pulled for each algorithm. Used for frequency calculation.
+    :param optimal_arms: The indices of the Pareto optimal arms.
     :param setup: The experimental setup dictionary.
     :return: None
     """
-    for algorithm in setup:
+    fig, axs = plt.subplots(2, 4, figsize=(20, 10))
+    for i, algorithm in enumerate(setup):
+        ax = axs[i // 4, i % 4]
         arm_pulls = setup[algorithm]["arm_pulls"]
-        avg_arm_pulls = np.mean(arm_pulls, axis=0)
-        plt.plot(avg_arm_pulls, label=f"{algorithm}")
-    plt.xlabel("Arm")
-    plt.ylabel("Frequency")
-    plt.title("Frequency of pulling each arm")
-    plt.legend()
+        avg_arm_pulls = np.mean(arm_pulls, axis=0) / total_pulls
+        std_arm_pulls = np.std(arm_pulls, axis=0) / total_pulls
+        ax.bar(range(len(avg_arm_pulls)), avg_arm_pulls, yerr=1.96 * std_arm_pulls / np.sqrt(len(arm_pulls)))
+        ax.set_title(f"{algorithm}")
+        ax.set_xticks(range(len(avg_arm_pulls)))
+        # Highlight the Pareto optimal arms in the plot
+        for optimal_arm in optimal_arms:
+            ax.get_children()[optimal_arm].set_color('green')
+    # Show 'Frequency' on the y-axis of all plots in the first column
+    for i in range(2):
+        axs[i, 0].set_ylabel("Frequency")
+    # Show 'Arm index' on the x-axis of the second row
+    for i in range(4):
+        axs[1, i].set_xlabel("Arm index")
     plt.show()
