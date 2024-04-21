@@ -1,17 +1,16 @@
-import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd
 
-from bandits.UCB import PUCB1Bandit, LSUCB1Bandit
-from bandits.KnowledgeGradient import PKGBandit, LSKGArmsBandit, LSKGObjectivesBandit
 from bandits.Annealing import APBandit
+from bandits.KnowledgeGradient import PKGBandit, LSKGArmsBandit, LSKGObjectivesBandit
 from bandits.ThompsonSampling import NormalPTSBandit, NormalLSTSBandit
+from bandits.UCB import PUCB1Bandit, LSUCB1Bandit
 from main import calculate_unfairness_regret
 from plotting import plot_regrets, plot_arms_pareto_front, plot_arm_pulls
 
 # EXPERIMENTAL SETUP PARAMETERS
-num_runs = 10  # Number of experiments M
-horizon = 25_000  # Number of time steps T
+num_runs = 100  # Number of experiments M
+horizon = 30_000  # Number of time steps T
 
 # LOADING DATA
 # use the contents of the Experiment0.csv file located in the results directory as a pandas dataframe
@@ -42,13 +41,12 @@ weights = [(x, 1 - x) for x in np.linspace(0, 1, 11)]
 plot_arms_pareto_front(np.array([[arm[0], arm[2]] for arm in arms]), pareto_arms)
 
 
-def pull(arm, arms, num_objectives):
+def pull(arm, arms):
     """
     Pull an arm of the bandit and return the reward for each objective. The rewards ri of arm i are drawn from
     a normal distribution with mean mi and standard deviation si.
     :param arm: The arm to pull.
     :param arms: The arms of the bandit.
-    :param num_objectives: The number of objectives.
     :return: The reward for each objective.
     """
     obj1 = np.random.normal(arms[arm][0], arms[arm][1])
@@ -142,7 +140,7 @@ def run_experiment(num_arms, num_objectives, arms, pareto_arms, weights, log=Fal
                 # Choose an arm
                 arm = agent.choose_arm()
                 # Pull the arm and receive the reward
-                reward = pull(arm, arms, num_objectives)
+                reward = pull(arm, arms)
                 arm_pulls[arm] += 1
                 # Learn from the reward
                 agent.learn(arm, reward)
@@ -166,7 +164,7 @@ def run_experiment(num_arms, num_objectives, arms, pareto_arms, weights, log=Fal
 
     # Plot the cumulative pareto regrets and the cumulative unfairness regrets
     plot_regrets(setup)
-    plot_arm_pulls(setup)
+    plot_arm_pulls(setup, pareto_arms, horizon)
 
 
 if __name__ == '__main__':
