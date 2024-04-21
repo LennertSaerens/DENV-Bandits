@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+from matplotlib.patches import Ellipse
+
 # Increase the font size of the plots
 plt.rcParams.update({'font.size': 12})
 # Change the font to a fancy serif font for use in a latex document
@@ -46,19 +48,25 @@ def plot_regrets(setup_dict):
     plt.show()
 
 
-def plot_arms_pareto_front(arms, pareto_indices):
+def plot_arms_pareto_front(arms, pareto_indices, plot_stds=False):
     """
     Plot the arms in the 2D objective space and highlight the Pareto front in the plot by plotting the Pareto optimal arms in a different color.
+    If plot_stds is set to True, the standard deviations of the arms are also plotted as shaded ellipse around the mean.
     :param arms: The means of the arms for each objective.
     :param pareto_indices: The indices of the Pareto optimal arms.
+    :param plot_stds: Whether to plot the standard deviations of the arms as well.
     :return: None
     """
-    plt.scatter(arms[:, 0], arms[:, 1])
+    plt.scatter(arms[:, 0], arms[:, 2], color='red')
     # Annotate the arms with their index at an offset
     for i in range(len(arms)):
-        plt.annotate(i, (arms[i, 0], arms[i, 1]), textcoords="offset points", xytext=(0, 5), ha='center')
+        plt.annotate(i, (arms[i, 0], arms[i, 2]), textcoords="offset points", xytext=(0, 5), ha='center')
     for pareto_index in pareto_indices:
-        plt.scatter(arms[pareto_index, 0], arms[pareto_index, 1], color='green')
+        plt.scatter(arms[pareto_index, 0], arms[pareto_index, 2], color='green')
+    if plot_stds:
+        for arm in arms:
+            ellipse = Ellipse((arm[0], arm[2]), width=arm[1], height=arm[3], alpha=0.05)
+            plt.gca().add_patch(ellipse)
     plt.xlabel("Objective 1")
     plt.ylabel("Objective 2")
     plt.title("Arms in the 2D objective space")

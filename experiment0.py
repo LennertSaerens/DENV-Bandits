@@ -38,7 +38,7 @@ pareto_arms = [0, 1, 4, 10, 16]
 weights = [(x, 1 - x) for x in np.linspace(0, 1, 11)]
 
 # Plot the arms
-plot_arms_pareto_front(np.array([[arm[0], arm[2]] for arm in arms]), pareto_arms)
+plot_arms_pareto_front(np.array(arms), pareto_arms, plot_stds=False)
 
 
 def pull(arm, arms):
