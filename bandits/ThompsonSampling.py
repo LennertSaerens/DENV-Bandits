@@ -2,6 +2,7 @@ import random
 import numpy as np
 import scipy.stats as stats
 
+
 class PTSBandit:
     """
     Pareto Thompson Sampling Bandit (PTS)
@@ -145,7 +146,8 @@ class NormalPTSBandit:
             self.mu[arm][o] = (self.mu[arm][o] * self.precision[arm][o] + reward[o]) / (self.precision[arm][o] + 1)
             self.precision[arm][o] += 1
             self.alpha[arm][o] += 0.5
-            self.beta[arm][o] += 0.5 * (reward[o] - self.mu[arm][o]) ** 2 * ((self.precision[arm][o] - 1) / self.precision[arm][o])
+            self.beta[arm][o] += 0.5 * (reward[o] - self.mu[arm][o]) ** 2 * (
+                        (self.precision[arm][o] - 1) / self.precision[arm][o])
 
     def reset(self):
         """
@@ -170,7 +172,8 @@ class NormalLSTSBandit:
         self.scalarization_functions = scalarization_functions
         self.num_scalarization_functions = len(scalarization_functions)
         self.mu = np.zeros((self.num_scalarization_functions, num_arms, num_objectives))  # mean
-        self.precision = np.ones((self.num_scalarization_functions, num_arms, num_objectives))  # precision, also called lambda
+        self.precision = np.ones(
+            (self.num_scalarization_functions, num_arms, num_objectives))  # precision, also called lambda
         self.alpha = np.ones((self.num_scalarization_functions, num_arms, num_objectives))  # shape
         self.beta = np.ones((self.num_scalarization_functions, num_arms, num_objectives))  # scale
         self.MRU = False  # Most Recently Used scalarization function
@@ -200,10 +203,12 @@ class NormalLSTSBandit:
         :return: None
         """
         for o in range(self.num_objectives):
-            self.mu[self.MRU][arm][o] = (self.mu[self.MRU][arm][o] * self.precision[self.MRU][arm][o] + reward[o]) / (self.precision[self.MRU][arm][o] + 1)
+            self.mu[self.MRU][arm][o] = (self.mu[self.MRU][arm][o] * self.precision[self.MRU][arm][o] + reward[o]) / (
+                        self.precision[self.MRU][arm][o] + 1)
             self.precision[self.MRU][arm][o] += 1
             self.alpha[self.MRU][arm][o] += 0.5
-            self.beta[self.MRU][arm][o] += 0.5 * (reward[o] - self.mu[self.MRU][arm][o]) ** 2 * ((self.precision[self.MRU][arm][o] - 1) / self.precision[self.MRU][arm][o])
+            self.beta[self.MRU][arm][o] += 0.5 * (reward[o] - self.mu[self.MRU][arm][o]) ** 2 * (
+                        (self.precision[self.MRU][arm][o] - 1) / self.precision[self.MRU][arm][o])
 
     def reset(self):
         """
