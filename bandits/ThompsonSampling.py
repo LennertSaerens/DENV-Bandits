@@ -107,3 +107,110 @@ class LSTSBandit:
         """
         self.alphas = np.ones((self.num_scalarization_functions, self.num_arms, self.num_objectives))
         self.betas = np.ones((self.num_scalarization_functions, self.num_arms, self.num_objectives))
+
+
+class NormalPTSBandit:
+    """
+    Variant of the Pareto Thompson Sampling bandit that uses Normal-Inverse-Gamma Distribution instead of Beta.
+    Change made because the rewards are not binary but sampled from a normal distribution.
+    """
+
+    def __init__(self, num_arms, num_objectives):
+        self.num_arms = num_arms
+        self.num_objectives = num_objectives
+        self.mu = np.zeros((num_arms, num_objectives))  # mean
+        self.precision = np.ones((num_arms, num_objectives))  # precision, also called lambda
+        self.alpha = np.ones((num_arms, num_objectives))  # shape
+        self.beta = np.ones((num_arms, num_objectives))  # scale
+
+    def choose_arm(self):
+        """
+        Find all Pareto optimal arms and choose one uniformly at random.
+        :return: The arm to pull.
+        """
+        taus = np.random.gamma(self.alpha, self.beta)
+        samples = np.random.normal(self.mu, 1 / (self.precision * taus))
+        is_strictly_worse = np.all(samples[:, None, :] < samples[None, :, :], axis=2)
+        pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
+        return random.choice(pareto_indices)
+
+    def learn(self, arm, reward):
+        """
+        Learn from the reward that was received for pulling the arm.
+        :param arm: The arm that was pulled.
+        :param reward: The reward for each objective.
+        :return: None
+        """
+        for o in range(self.num_objectives):
+            self.mu[arm][o] = (self.mu[arm][o] * self.precision[arm][o] + reward[o]) / (self.precision[arm][o] + 1)
+            self.precision[arm][o] += 1
+            self.alpha[arm][o] += 0.5
+            self.beta[arm][o] += 0.5 * (reward[o] - self.mu[arm][o]) ** 2 * ((self.precision[arm][o] - 1) / self.precision[arm][o])
+
+    def reset(self):
+        """
+        Reset the agent.
+        :return: None
+        """
+        self.mu = np.zeros((self.num_arms, self.num_objectives))
+        self.precision = np.ones((self.num_arms, self.num_objectives))
+        self.alpha = np.ones((self.num_arms, self.num_objectives))
+        self.beta = np.ones((self.num_arms, self.num_objectives))
+
+
+class NormalLSTSBandit:
+    """
+    Variant of the Linear Scalarized Thompson Sampling bandit that uses Normal-Inverse-Gamma Distribution instead of Beta.
+    Change made because the rewards are not binary but sampled from a normal distribution.
+    """
+
+    def __init__(self, num_arms, num_objectives, scalarization_functions):
+        self.num_arms = num_arms
+        self.num_objectives = num_objectives
+        self.scalarization_functions = scalarization_functions
+        self.num_scalarization_functions = len(scalarization_functions)
+        self.mu = np.zeros((self.num_scalarization_functions, num_arms, num_objectives))  # mean
+        self.precision = np.ones((self.num_scalarization_functions, num_arms, num_objectives))  # precision, also called lambda
+        self.alpha = np.ones((self.num_scalarization_functions, num_arms, num_objectives))  # shape
+        self.beta = np.ones((self.num_scalarization_functions, num_arms, num_objectives))  # scale
+        self.MRU = False  # Most Recently Used scalarization function
+
+    def choose_arm(self):
+        """
+        Find the Pareto optimal arm by sampling from the beta distribution and using the scalarization functions.
+        :return: The arm to pull.
+        """
+        taus = np.random.gamma(self.alpha, self.beta)
+        samples = np.random.normal(self.mu, 1 / (self.precision * taus))
+        # pick a random scalarization function
+        scalarization_function = random.randint(0, self.num_scalarization_functions - 1)
+        # Calculate the scalarized values for each arm
+        scalarized_values = np.dot(samples[scalarization_function],
+                                   self.scalarization_functions[scalarization_function])
+        # Set the most recently used scalarization function
+        self.MRU = scalarization_function
+        # Find the arm with the highest scalarized value
+        return np.argmax(scalarized_values)
+
+    def learn(self, arm, reward):
+        """
+        Learn from the reward that was received for pulling the arm.
+        :param arm: The arm that was pulled.
+        :param reward: The reward for each objective.
+        :return: None
+        """
+        for o in range(self.num_objectives):
+            self.mu[self.MRU][arm][o] = (self.mu[self.MRU][arm][o] * self.precision[self.MRU][arm][o] + reward[o]) / (self.precision[self.MRU][arm][o] + 1)
+            self.precision[self.MRU][arm][o] += 1
+            self.alpha[self.MRU][arm][o] += 0.5
+            self.beta[self.MRU][arm][o] += 0.5 * (reward[o] - self.mu[self.MRU][arm][o]) ** 2 * ((self.precision[self.MRU][arm][o] - 1) / self.precision[self.MRU][arm][o])
+
+    def reset(self):
+        """
+        Reset the agent.
+        :return: None
+        """
+        self.mu = np.zeros((self.num_scalarization_functions, self.num_arms, self.num_objectives))
+        self.precision = np.ones((self.num_scalarization_functions, self.num_arms, self.num_objectives))
+        self.alpha = np.ones((self.num_scalarization_functions, self.num_arms, self.num_objectives))
+        self.beta = np.ones((self.num_scalarization_functions, self.num_arms, self.num_objectives))
