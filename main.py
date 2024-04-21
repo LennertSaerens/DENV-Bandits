@@ -37,26 +37,14 @@ def calculate_pareto_regret(arm, arms, pareto_arms):
 
 def calculate_unfairness_regret(arm_pulls, pareto_arms):
     """
-    Calculate the unfairness regret that was received at time step t for pulling arm. The unfairness regret
-    measure is the Shannon entropy which is a measure of the disorder of the frequency of selecting the optimal arms in
-    the pareto front.
+    Calculate the unfairness regret that was received at time step t for pulling arm.
+    The unfairness of a MOMAB algorithm is defined as the variance of the arms in the Pareto front.
     :param pareto_arms: The pareto optimal arms.
     :param arm_pulls: The number of times each arm has been pulled.
     :return: The unfairness regret.
     """
-    # Total number of pulls across all arms
-    total_pulls = sum(arm_pulls)
-    # Number of times each pareto optimal arm has been pulled
     pareto_arm_pulls = [arm_pulls[pareto_arm] for pareto_arm in pareto_arms]
-    total_pareto_pulls = sum(pareto_arm_pulls)
-    if total_pulls == 0 or total_pareto_pulls == 0:
-        return 0
-    else:
-        frequencies = [pulls / total_pulls for pulls in pareto_arm_pulls]
-        # Return 0 if any of the frequencies are 0
-        if 0 in frequencies:
-            return 0
-        return -(1 / total_pareto_pulls) * sum(frequencies * np.log(frequencies))
+    return np.var(pareto_arm_pulls)
 
 
 def pull(arm, arms, num_objectives):
