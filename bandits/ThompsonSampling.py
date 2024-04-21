@@ -1,6 +1,6 @@
 import random
 import numpy as np
-
+import scipy.stats as stats
 
 class PTSBandit:
     """
@@ -128,8 +128,8 @@ class NormalPTSBandit:
         Find all Pareto optimal arms and choose one uniformly at random.
         :return: The arm to pull.
         """
-        taus = np.random.gamma(self.alpha, self.beta)
-        samples = np.random.normal(self.mu, 1 / (self.precision * taus))
+        stds = stats.invgamma.rvs(self.alpha, scale=self.beta)
+        samples = np.random.normal(self.mu, stds / self.precision)
         is_strictly_worse = np.all(samples[:, None, :] < samples[None, :, :], axis=2)
         pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
         return random.choice(pareto_indices)
@@ -180,8 +180,8 @@ class NormalLSTSBandit:
         Find the Pareto optimal arm by sampling from the beta distribution and using the scalarization functions.
         :return: The arm to pull.
         """
-        taus = np.random.gamma(self.alpha, self.beta)
-        samples = np.random.normal(self.mu, 1 / (self.precision * taus))
+        stds = stats.invgamma.rvs(self.alpha, scale=self.beta)
+        samples = np.random.normal(self.mu, stds / self.precision)
         # pick a random scalarization function
         scalarization_function = random.randint(0, self.num_scalarization_functions - 1)
         # Calculate the scalarized values for each arm
