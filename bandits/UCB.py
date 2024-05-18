@@ -56,6 +56,14 @@ class PUCB1Bandit:
         self.arm_counts = np.zeros((self.num_arms, self.num_objectives))
         self.current_init_arm = 0
 
+    def get_top_arms(self, n):
+        """
+        Get the top n arms based on the mean rewards.
+        :param n: The number of arms to return.
+        :return: The top n arms.
+        """
+        return np.argsort(np.sum(self.arm_means, axis=1))[::-1][:n]
+
 
 class SUCB1Bandit:
     """
@@ -123,6 +131,14 @@ class SUCB1Bandit:
         self.current_init_arm = 0
         self.current_init_function = 0
         self.MRU = False
+
+    def get_top_arms(self, n):
+        """
+        Get the top n arms based on the mean rewards.
+        :param n: The number of arms to return.
+        :return: The top n arms.
+        """
+        return np.argsort(np.sum(self.arm_means[self.MRU], axis=1))[::-1][:n]
 
 
 class LSUCB1Bandit(SUCB1Bandit):
