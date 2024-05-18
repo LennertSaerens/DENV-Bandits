@@ -196,3 +196,26 @@ def plot_arm_pulls_single(setup, algorithm_name, optimal_arms, total_pulls):
     ax.set_ylabel("Frequency")
     ax.set_xlabel("Arm index")
     plt.show()
+
+
+def plot_correct_recommendation_frequencies(setup):
+    """
+    Plot the frequency of making correct recommendations for each algorithm in the experimental setup.
+    :param setup: The experimental setup dictionary.
+    :return: None
+    """
+    fig, ax = plt.subplots(figsize=(10, 5))
+    for algorithm in setup:
+        cor_rec_per = setup[algorithm]["cor_rec_per"]
+        avg_cor_rec_per = np.mean(cor_rec_per, axis=0)
+        std_cor_rec_per = np.std(cor_rec_per, axis=0)
+        ax.plot(avg_cor_rec_per, label=f"{algorithm}")
+        ax.fill_between(range(len(avg_cor_rec_per)),
+                        avg_cor_rec_per - 1.96 * std_cor_rec_per / np.sqrt(len(cor_rec_per)),
+                        avg_cor_rec_per + 1.96 * std_cor_rec_per / np.sqrt(len(cor_rec_per)),
+                        alpha=0.2)
+    ax.set_title("Correct Recommendation Frequencies")
+    ax.set_xlabel("Time steps")
+    ax.set_ylabel("Correct Recommendation Frequency")
+    ax.legend()
+    plt.show()
