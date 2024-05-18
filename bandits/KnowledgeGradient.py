@@ -74,6 +74,14 @@ class PKGBandit:
         self.current_init_arm = 0
         self.current_init_phase = 0
 
+    def get_top_arms(self, n):
+        """
+        Get the top n arms based on the mean rewards.
+        :param n: The number of top arms to return.
+        :return: The top n arms.
+        """
+        return np.argsort(np.max(self.arm_means, axis=1))[-n:]
+
 
 class LSKGArmsBandit:
     """
@@ -141,6 +149,14 @@ class LSKGArmsBandit:
         self.current_init_arm = 0
         self.current_init_phase = 0
 
+    def get_top_arms(self, n):
+        """
+        Get the top n arms based on the mean rewards.
+        :param n: The number of top arms to return.
+        :return: The top n arms.
+        """
+        return np.argsort(np.max(self.arm_means, axis=1))[-n:]
+
 
 class LSKGObjectivesBandit:
     """
@@ -206,3 +222,11 @@ class LSKGObjectivesBandit:
         self.arm_pulls = np.zeros((self.num_arms, self.num_objectives))
         self.current_init_arm = 0
         self.current_init_phase = 0
+
+    def get_top_arms(self, n):
+        """
+        Get the top n arms based on the mean rewards.
+        :param n: The number of top arms to return.
+        :return: The top n arms.
+        """
+        return np.argsort(np.max(self.arm_means, axis=1))[-n:]
