@@ -79,7 +79,7 @@ def plot_arms_pareto_front(arms, pareto_indices, plot_stds=False):
 
 def plot_arm_pulls(setup, optimal_arms, total_pulls):
     """
-    Plot the frequency of pulling each arm for each algorithm in the experimental setup. Each algorithm has its own subplot within the big plot with 2 rows and 4 columns.
+    Plot the frequency of pulling each arm for each algorithm in the experimental setup. Each algorithm has its own subplot within the big plot with 4 rows and 2 columns.
     Inside each subplot, the number of times the algorithm pulled each arm is plotted as a bar for each arm. Pareto optimal arms are highlighted in a different color.
     All other arms have the same color.
     :param total_pulls: The total number of times an arm was pulled for each algorithm. Used for frequency calculation.
@@ -87,9 +87,9 @@ def plot_arm_pulls(setup, optimal_arms, total_pulls):
     :param setup: The experimental setup dictionary.
     :return: None
     """
-    fig, axs = plt.subplots(2, 4, figsize=(20, 10))
+    fig, axs = plt.subplots(4, 2, figsize=(20, 20))
     for i, algorithm in enumerate(setup):
-        ax = axs[i // 4, i % 4]
+        ax = axs[i // 2, i % 2]
         arm_pulls = setup[algorithm]["arm_pulls"]
         avg_arm_pulls = np.mean(arm_pulls, axis=0) / total_pulls
         std_arm_pulls = np.std(arm_pulls, axis=0) / total_pulls
@@ -100,11 +100,11 @@ def plot_arm_pulls(setup, optimal_arms, total_pulls):
         for optimal_arm in optimal_arms:
             ax.get_children()[optimal_arm].set_color('green')
     # Show 'Frequency' on the y-axis of all plots in the first column
-    for i in range(2):
-        axs[i, 0].set_ylabel("Frequency")
-    # Show 'Arm index' on the x-axis of the second row
     for i in range(4):
-        axs[1, i].set_xlabel("Arm index")
+        axs[i, 0].set_ylabel("Frequency")
+    # Show 'Arm index' on the x-axis of all plots in the bottom row
+    axs[3, 0].set_xlabel("Arm index")
+    axs[3, 1].set_xlabel("Arm index")
     plt.show()
 
 
