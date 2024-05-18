@@ -58,6 +58,14 @@ class PTSBandit:
         self.alphas = np.ones((self.num_arms, self.num_objectives))
         self.betas = np.ones((self.num_arms, self.num_objectives))
 
+    def get_top_arms(self, n):
+        """
+        Get the top n arms based on the mean rewards.
+        :param n: The number of top arms to return.
+        :return: The indices of the top n arms.
+        """
+        return np.argsort(np.mean(self.alphas / (self.alphas + self.betas), axis=1))[-n:]
+
 
 class LSTSBandit:
     """
@@ -109,6 +117,14 @@ class LSTSBandit:
         self.alphas = np.ones((self.num_scalarization_functions, self.num_arms, self.num_objectives))
         self.betas = np.ones((self.num_scalarization_functions, self.num_arms, self.num_objectives))
 
+    def get_top_arms(self, n):
+        """
+        Get the top n arms based on the mean rewards.
+        :param n: The number of top arms to return.
+        :return: The indices of the top n arms.
+        """
+        return np.argsort(np.mean(self.alphas[self.MRU] / (self.alphas[self.MRU] + self.betas[self.MRU]), axis=1))[-n:]
+
 
 class NormalPTSBandit:
     """
@@ -158,6 +174,14 @@ class NormalPTSBandit:
         self.precision = np.ones((self.num_arms, self.num_objectives))
         self.alpha = np.ones((self.num_arms, self.num_objectives))
         self.beta = np.ones((self.num_arms, self.num_objectives))
+
+    def get_top_arms(self, n):
+        """
+        Get the top n arms based on the mean rewards.
+        :param n: The number of top arms to return.
+        :return: The indices of the top n arms.
+        """
+        return np.argsort(np.mean(self.mu, axis=1))[-n:]
 
 
 class NormalLSTSBandit:
@@ -219,3 +243,11 @@ class NormalLSTSBandit:
         self.precision = np.ones((self.num_scalarization_functions, self.num_arms, self.num_objectives))
         self.alpha = np.ones((self.num_scalarization_functions, self.num_arms, self.num_objectives))
         self.beta = np.ones((self.num_scalarization_functions, self.num_arms, self.num_objectives))
+
+    def get_top_arms(self, n):
+        """
+        Get the top n arms based on the mean rewards.
+        :param n: The number of top arms to return.
+        :return: The indices of the top n arms.
+        """
+        return np.argsort(np.mean(self.mu[self.MRU], axis=1))[-n:]
