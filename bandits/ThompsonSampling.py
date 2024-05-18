@@ -123,7 +123,7 @@ class LSTSBandit:
         :param n: The number of top arms to return.
         :return: The indices of the top n arms.
         """
-        return np.argsort(np.mean(self.alphas[self.MRU] / (self.alphas[self.MRU] + self.betas[self.MRU]), axis=1))[-n:]
+        return np.argsort(np.sum(self.alphas[self.MRU] / (self.alphas[self.MRU] + self.betas[self.MRU]), axis=1))[-n:]
 
 
 class NormalPTSBandit:

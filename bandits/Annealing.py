@@ -80,4 +80,4 @@ class APBandit:
         :param num_arms: The number of top arms to get.
         :return: The top arms.
         """
-        return np.argsort(np.max(self.arm_means, axis=1))[::-1][:num_arms]
+        return np.argsort(np.sum(self.arm_means, axis=1))[::-1][:num_arms]
