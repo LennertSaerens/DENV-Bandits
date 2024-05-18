@@ -77,7 +77,7 @@ def plot_arms_pareto_front(arms, pareto_indices, plot_stds=False):
     plt.show()
 
 
-def plot_arm_pulls(setup, optimal_arms, total_pulls):
+def plot_arm_pulls(setup, optimal_arms, total_pulls, show_arm_idxs=False):
     """
     Plot the frequency of pulling each arm for each algorithm in the experimental setup. Each algorithm has its own subplot within the big plot with 4 rows and 2 columns.
     Inside each subplot, the number of times the algorithm pulled each arm is plotted as a bar for each arm. Pareto optimal arms are highlighted in a different color.
@@ -85,6 +85,7 @@ def plot_arm_pulls(setup, optimal_arms, total_pulls):
     :param total_pulls: The total number of times an arm was pulled for each algorithm. Used for frequency calculation.
     :param optimal_arms: The indices of the Pareto optimal arms.
     :param setup: The experimental setup dictionary.
+    :param show_arm_idxs: Whether to show the arm indices on the x-axis.
     :return: None
     """
     fig, axs = plt.subplots(4, 2, figsize=(20, 20))
@@ -95,7 +96,8 @@ def plot_arm_pulls(setup, optimal_arms, total_pulls):
         std_arm_pulls = np.std(arm_pulls, axis=0) / total_pulls
         ax.bar(range(len(avg_arm_pulls)), avg_arm_pulls, yerr=1.96 * std_arm_pulls / np.sqrt(len(arm_pulls)))
         ax.set_title(f"{algorithm}")
-        ax.set_xticks(range(len(avg_arm_pulls)))
+        if show_arm_idxs:
+            ax.set_xticks(range(len(avg_arm_pulls)))
         # Highlight the Pareto optimal arms in the plot
         for optimal_arm in optimal_arms:
             ax.get_children()[optimal_arm].set_color('green')
