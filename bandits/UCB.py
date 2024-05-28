@@ -56,13 +56,17 @@ class PUCB1Bandit:
         self.arm_counts = np.zeros((self.num_arms, self.num_objectives))
         self.current_init_arm = 0
 
-    def get_top_arms(self, n):
+    def get_top_arms(self):
         """
-        Get the top n arms based on the mean rewards.
-        :param n: The number of arms to return.
-        :return: The top n arms.
+        Get the arms that are considered to be Pareto optimal by the bandit.
+        :return: The top arms.
         """
-        return np.argsort(np.sum(self.arm_means, axis=1))[::-1][:n]
+        ucb_values = self.arm_means + self.kappa * np.sqrt(
+            (2 * math.log(self.n * pow(self.num_objectives * self.num_arms, 1 / 4))) / self.arm_counts
+        )
+        is_strictly_worse = np.all(ucb_values[:, None, :] < ucb_values[None, :, :], axis=2)
+        pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
+        return pareto_indices
 
 
 class SUCB1Bandit:
@@ -132,13 +136,17 @@ class SUCB1Bandit:
         self.current_init_function = 0
         self.MRU = False
 
-    def get_top_arms(self, n):
+    def get_top_arms(self):
         """
-        Get the top n arms based on the mean rewards.
-        :param n: The number of arms to return.
-        :return: The top n arms.
+        Get the arms that are considered to be Pareto optimal by the bandit.
+        :return: The top arms.
         """
-        return np.argsort(np.sum(self.arm_means[self.MRU], axis=1))[::-1][:n]
+        function = random.choice(range(self.num_scalarization_functions))
+        scalarized_means = self.scalarize(self.arm_means[function], self.scalarization_functions[function])
+        ucb_values = scalarized_means + self.kappa * np.sqrt(
+            2 * math.log(self.n[function]) / self.arm_counts[function])
+        arm = np.argmax(ucb_values)
+        return arm
 
 
 class LSUCB1Bandit(SUCB1Bandit):
