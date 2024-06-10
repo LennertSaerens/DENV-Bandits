@@ -198,24 +198,38 @@ def plot_arm_pulls_single(setup, algorithm_name, optimal_arms, total_pulls):
     plt.show()
 
 
-def plot_correct_recommendation_frequencies(setup):
+def plot_bernoulli_metric(setup):
     """
-    Plot the frequency of making correct recommendations for each algorithm in the experimental setup.
+    Plot the evolution of the Bernoulli metric for a single algorithm in the experimental setup. The Bernoulli metric is the fraction of times the algorithm pulls a Pareto optimal arm.
+    The x-axis represents the time steps and the y-axis represents the Bernoulli metric. The metric is averaged over the experiments.
+    :param setup: The experimental setup dictionary.
+    :param algorithm_name: The name of the algorithm to plot.
+    :return: None
+    """
+    for algorithm_name in setup:
+        bernoulli_metrics = setup[algorithm_name]["cor_rec_ber"]
+        avg_bernoulli_metrics = np.mean(bernoulli_metrics, axis=0)
+        plt.plot(avg_bernoulli_metrics, label=f"{algorithm_name}")
+        plt.title(f"Bernoulli metric for {algorithm_name}")
+        plt.xlabel("Time steps")
+        plt.ylabel("Bernoulli metric")
+        plt.legend()
+        plt.show()
+
+
+def plot_jaccard_metric(setup):
+    """
+    Plot the evolution of the Jaccard metric for a single algorithm in the experimental setup. The Jaccard metric is the Jaccard similarity between the set of Pareto optimal arms and the set of arms recommended by the algorithm.
+    The x-axis represents the time steps and the y-axis represents the Jaccard metric. The metric is averaged over the experiments.
     :param setup: The experimental setup dictionary.
     :return: None
     """
-    fig, ax = plt.subplots(figsize=(10, 5))
-    for algorithm in setup:
-        cor_rec_per = setup[algorithm]["cor_rec_per"]
-        avg_cor_rec_per = np.mean(cor_rec_per, axis=0)
-        std_cor_rec_per = np.std(cor_rec_per, axis=0)
-        ax.plot(avg_cor_rec_per, label=f"{algorithm}")
-        ax.fill_between(range(len(avg_cor_rec_per)),
-                        avg_cor_rec_per - 1.96 * std_cor_rec_per / np.sqrt(len(cor_rec_per)),
-                        avg_cor_rec_per + 1.96 * std_cor_rec_per / np.sqrt(len(cor_rec_per)),
-                        alpha=0.2)
-    ax.set_title("Correct Recommendation Frequencies")
-    ax.set_xlabel("Time steps")
-    ax.set_ylabel("Correct Recommendation Frequency")
-    ax.legend()
-    plt.show()
+    for algorithm_name in setup:
+        jaccard_metrics = setup[algorithm_name]["jaccard_sim"]
+        avg_jaccard_metrics = np.mean(jaccard_metrics, axis=0)
+        plt.plot(avg_jaccard_metrics, label=f"{algorithm_name}")
+        plt.title(f"Jaccard distance metric for {algorithm_name}")
+        plt.xlabel("Time steps")
+        plt.ylabel("Jaccard metric")
+        plt.legend()
+        plt.show()
