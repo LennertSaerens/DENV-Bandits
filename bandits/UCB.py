@@ -37,6 +37,18 @@ class PUCB1Bandit:
         self.n += 1
         return arm
 
+    def get_top_arms(self):
+        """
+        Get the arms that are considered to be Pareto optimal by the bandit.
+        :return: The top arms.
+        """
+        ucb_values = self.arm_means + self.kappa * np.sqrt(
+            (2 * math.log(self.n * pow(self.num_objectives * self.num_arms, 1 / 4))) / self.arm_counts
+        )
+        is_strictly_worse = np.all(ucb_values[:, None, :] < ucb_values[None, :, :], axis=2)
+        pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
+        return pareto_indices
+
     def learn(self, arm, reward):
         """
         Learn from the reward that was received for pulling the arm.
@@ -55,18 +67,6 @@ class PUCB1Bandit:
         self.arm_means = np.zeros((self.num_arms, self.num_objectives))
         self.arm_counts = np.zeros((self.num_arms, self.num_objectives))
         self.current_init_arm = 0
-
-    def get_top_arms(self):
-        """
-        Get the arms that are considered to be Pareto optimal by the bandit.
-        :return: The top arms.
-        """
-        ucb_values = self.arm_means + self.kappa * np.sqrt(
-            (2 * math.log(self.n * pow(self.num_objectives * self.num_arms, 1 / 4))) / self.arm_counts
-        )
-        is_strictly_worse = np.all(ucb_values[:, None, :] < ucb_values[None, :, :], axis=2)
-        pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
-        return pareto_indices
 
 
 class SUCB1Bandit:
@@ -141,12 +141,7 @@ class SUCB1Bandit:
         Get the arms that are considered to be Pareto optimal by the bandit.
         :return: The top arms.
         """
-        function = random.choice(range(self.num_scalarization_functions))
-        scalarized_means = self.scalarize(self.arm_means[function], self.scalarization_functions[function])
-        ucb_values = scalarized_means + self.kappa * np.sqrt(
-            2 * math.log(self.n[function]) / self.arm_counts[function])
-        arm = np.argmax(ucb_values)
-        return arm
+        pass
 
 
 class LSUCB1Bandit(SUCB1Bandit):
