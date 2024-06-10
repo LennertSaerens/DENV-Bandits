@@ -39,6 +39,16 @@ class PTSBandit:
         # Choose an arm uniformly at random from the list of pareto optimal arms
         return random.choice(pareto_indices)
 
+    def get_top_arms(self):
+        """
+        Get the arms that are considered to be Pareto optimal by the bandit.
+        :return: The top arms.
+        """
+        samples = np.random.beta(self.alphas, self.betas)
+        is_strictly_worse = np.all(samples[:, None, :] < samples[None, :, :], axis=2)
+        pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
+        return pareto_indices
+
     def learn(self, arm, reward):
         """
         Learn from the reward that was received for pulling the arm.
@@ -134,6 +144,17 @@ class NormalPTSBandit:
         is_strictly_worse = np.all(samples[:, None, :] < samples[None, :, :], axis=2)
         pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
         return random.choice(pareto_indices)
+
+    def get_top_arms(self):
+        """
+        Get the arms that are considered to be Pareto optimal by the bandit.
+        :return: The top arms.
+        """
+        stds = stats.invgamma.rvs(self.alpha, scale=self.beta)
+        samples = np.random.normal(self.mu, stds / self.precision)
+        is_strictly_worse = np.all(samples[:, None, :] < samples[None, :, :], axis=2)
+        pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
+        return pareto_indices
 
     def learn(self, arm, reward):
         """
