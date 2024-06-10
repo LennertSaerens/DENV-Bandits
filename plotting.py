@@ -227,9 +227,32 @@ def plot_jaccard_metric(setup):
     for algorithm_name in setup:
         jaccard_metrics = setup[algorithm_name]["jaccard_sim"]
         avg_jaccard_metrics = np.mean(jaccard_metrics, axis=0)
+        std_jaccard_metrics = np.std(jaccard_metrics, axis=0)
         plt.plot(avg_jaccard_metrics, label=f"{algorithm_name}")
-        plt.title(f"Jaccard distance metric for {algorithm_name}")
+        plt.fill_between(range(len(avg_jaccard_metrics)),
+                         avg_jaccard_metrics - 1.96 * std_jaccard_metrics / np.sqrt(len(jaccard_metrics)),
+                         avg_jaccard_metrics + 1.96 * std_jaccard_metrics / np.sqrt(len(jaccard_metrics)),
+                         alpha=0.2)
+        plt.title(f"Jaccard similarity metric for {algorithm_name}")
         plt.xlabel("Time steps")
         plt.ylabel("Jaccard metric")
+        plt.legend()
+        plt.show()
+
+
+def plot_hypervolume(setup):
+    """
+    Plot the evolution of the hypervolume metric for a single algorithm in the experimental setup. The hypervolume metric is the hypervolume of the Pareto front dominated by the arms recommended by the algorithm.
+    The x-axis represents the time steps and the y-axis represents the hypervolume metric. The metric is averaged over the experiments.
+    :param setup: The experimental setup dictionary.
+    :return: None
+    """
+    for algorithm_name in setup:
+        hypervolumes = setup[algorithm_name]["hypervolume"]
+        avg_hypervolumes = np.mean(hypervolumes, axis=0)
+        plt.plot(avg_hypervolumes, label=f"{algorithm_name}")
+        plt.title(f"Hypervolume metric for {algorithm_name}")
+        plt.xlabel("Time steps")
+        plt.ylabel("Hypervolume")
         plt.legend()
         plt.show()
