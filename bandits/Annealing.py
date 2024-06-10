@@ -51,6 +51,13 @@ class APBandit:
         self.arm_pulls[arm] += 1
         return arm
 
+    def get_top_arms(self):
+        """
+        Get the top arms based on the means.
+        :return: The top arms.
+        """
+        return self.pareto_front
+
     def learn(self, arm, reward):
         """
         Learn from the reward that was received for pulling the arm.
@@ -73,11 +80,3 @@ class APBandit:
         self.arm_pulls = np.zeros((self.num_arms, self.num_objectives))
         self.current_init_arm = 0
         self.current_init_phase = 0
-
-    def get_top_arms(self, num_arms):
-        """
-        Get the top arms based on the means.
-        :param num_arms: The number of top arms to get.
-        :return: The top arms.
-        """
-        return np.argsort(np.sum(self.arm_means, axis=1))[::-1][:num_arms]
