@@ -295,6 +295,6 @@ def plot_hypervolume(file, num_runs, num_arm_pulls, rolling_avg_window=1):
 
 
 if __name__ == "__main__":
-    plot_bernoulli_metric("results/bandits/test.csv", 100, 250_000, rolling_avg_window=100)
-    plot_jaccard_metric("results/bandits/test.csv", 100, 250_000)
-    plot_hypervolume("results/bandits/test.csv", 100, 250_000)
+    # plot_bernoulli_metric("results/bandits/test.csv", 100, 250_000, rolling_avg_window=100)
+    plot_jaccard_metric("results/bandits/test.csv", 100, 250_000, rolling_avg_window=100)
+    plot_hypervolume("results/bandits/test.csv", 100, 250_000, rolling_avg_window=100)
