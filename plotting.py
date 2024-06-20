@@ -2,12 +2,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from matplotlib.patches import Ellipse
+from matplotlib.patches import Ellipse, Patch
 
 # Increase the font size of the plots
 plt.rcParams.update({'font.size': 16})
 # Change the font to a fancy serif font for use in a latex document
 plt.rcParams.update({'font.family': 'serif'})
+# plt.rcParams['figure.constrained_layout.use'] = True
 
 colors = ["tab:blue", "tab:orange", "tab:green", "tab:red", "tab:purple", "tab:brown", "tab:pink", "tab:gray",
           "tab:olive", "tab:cyan"]
@@ -81,28 +82,35 @@ def plot_arms_pareto_front(arms, pareto_indices, plot_stds=False):
     plt.show()
 
 
-def plot_arms_PFI_setting(arms, pareto_indices, std, plot_stds=True):
+def plot_arms_PFI_setting(arms, pareto_indices, std, plot_stds=True, reference_point=None):
     """
     Create a scatter plot of the arms. Pareto optimal arms are plotted in green, others in blue. The standard deviation is plotted as an ellipse around the mean.
-    :param arms: The list of arms. [(mean1, mean2), ...]
+    :param reference_point:  The reference point for the hypervolume calculation.
+    :param arms: The list of arms.
     :param pareto_indices: The indices of the Pareto optimal arms.
     :param std: The standard deviation of the arms.
     :param plot_stds: Whether to plot the standard deviations as ellipses around the means.
-    :return:
+    :return: None
     """
-    plt.scatter([arm[0] for arm in arms], [arm[1] for arm in arms], color='blue')
+    plt.scatter([arm[0] for arm in arms], [arm[1] for arm in arms], color='tab:blue')
     for pareto_index in pareto_indices:
-        plt.scatter(arms[pareto_index][0], arms[pareto_index][1], color='green')
+        plt.scatter(arms[pareto_index][0], arms[pareto_index][1], color='tab:green')
+
     if plot_stds:
         for arm in arms:
             ellipse = Ellipse(arm, width=2*std, height=2*std, alpha=0.05)
             plt.gca().add_patch(ellipse)
-    plt.scatter([], [], color='green', label='Pareto optimal arms')
-    plt.scatter([], [], color='blue', label='Suboptimal arms')
-    plt.legend()
+
+    if reference_point is not None:
+        plt.scatter(reference_point[0], reference_point[1], color='tab:orange')
+
+    legend_patches = [Patch(color='tab:blue', label='Suboptimal arm'), Patch(color='tab:green', label='Pareto optimal arm'), Patch(color='tab:orange', label='Reference point')]
+    plt.legend(handles=legend_patches, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=3)
+
+
+
     plt.xlabel("Objective 1")
     plt.ylabel("Objective 2")
-    plt.title("Arms")
     plt.show()
 
 
@@ -259,6 +267,7 @@ def plot_bernoulli_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1, p
                              avg_bernoulli_metrics[i] + 1.96 * std_bernoulli_metrics[i] / np.sqrt(num_runs),
                              alpha=0.2, color=colors[i])
 
+    plt.ylim(0, 1)
     plt.title("Bernoulli metric")
     plt.xlabel("Time steps")
     plt.ylabel("Bernoulli metric")
@@ -297,6 +306,7 @@ def plot_jaccard_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1, plo
                              avg_jaccard_metrics[i] + 1.96 * std_jaccard_metrics[i] / np.sqrt(num_runs),
                              alpha=0.2, color=colors[i])
 
+    plt.ylim(0, 1)
     plt.title("Jaccard metric")
     plt.xlabel("Time steps")
     plt.ylabel("Jaccard metric")
@@ -343,6 +353,6 @@ def plot_hypervolume(file, num_runs, num_arm_pulls, rolling_avg_window=1, plot_s
 
 
 if __name__ == "__main__":
-    # plot_bernoulli_metric("results/PFI_results.csv", 100, 5000, rolling_avg_window=1, plot_std=True)
-    # plot_jaccard_metric("results/PFI_results.csv", 100, 5000, rolling_avg_window=1, plot_std=True)
-    plot_hypervolume("results/PFI_results.csv", 100, 5000, rolling_avg_window=1, plot_std=True)
+    plot_bernoulli_metric("results/PFI_results.csv", 100, 10_000, rolling_avg_window=1, plot_std=True)
+    plot_jaccard_metric("results/PFI_results.csv", 100, 10_000, rolling_avg_window=1, plot_std=True)
+    plot_hypervolume("results/PFI_results.csv", 100, 10_000, rolling_avg_window=1, plot_std=True)
