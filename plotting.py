@@ -95,10 +95,11 @@ def plot_arms_PFI_setting(arms, pareto_indices, std, plot_stds=True):
         plt.scatter(arms[pareto_index][0], arms[pareto_index][1], color='green')
     if plot_stds:
         for arm in arms:
-            ellipse = Ellipse(arm, width=std, height=std, alpha=0.05)
+            ellipse = Ellipse(arm, width=2*std, height=2*std, alpha=0.05)
             plt.gca().add_patch(ellipse)
     plt.scatter([], [], color='green', label='Pareto optimal arms')
     plt.scatter([], [], color='blue', label='Suboptimal arms')
+    plt.legend()
     plt.xlabel("Objective 1")
     plt.ylabel("Objective 2")
     plt.title("Arms")
