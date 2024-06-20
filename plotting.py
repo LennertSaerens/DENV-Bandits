@@ -228,10 +228,11 @@ def plot_arm_pulls_single(setup, algorithm_name, optimal_arms, total_pulls):
 
 
 # Results are stored in a csv file with the following columns: algorithm name, run, time step, arm pulled at time t, cumulative pareto regret, cumulative unfairness regret, bernoulli metric, jaccard similarity, hypervolume
-def plot_bernoulli_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1):
+def plot_bernoulli_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1, plot_std=False):
     """
     Plot the evolution of the Bernoulli metric. The Bernoulli metric is the fraction of times the algorithm pulls a Pareto optimal arm.
     The x-axis represents the time steps and the y-axis represents the Bernoulli metric. The metric is averaged over the experiments.
+    :param plot_std: Whether to plot the standard deviation of the Bernoulli metric.
     :param file: The file containing the experimental results.
     :param num_runs: The number of runs of the experiment.
     :param num_arm_pulls: The number of arm pulls in each run of the experiment.
@@ -241,8 +242,9 @@ def plot_bernoulli_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1):
     result_df = pd.read_csv(file, header=None)
     algorithm_names = result_df[0].unique()
     num_algorithms = len(algorithm_names)
-    bernoulli_metrics = result_df.values[:, 3].reshape(num_algorithms, num_runs, num_arm_pulls)
+    bernoulli_metrics = result_df.values[:, 3].reshape(num_algorithms, num_runs, num_arm_pulls).astype(np.float64)
     avg_bernoulli_metrics = np.mean(bernoulli_metrics, axis=1)
+    std_bernoulli_metrics = np.std(bernoulli_metrics, axis=1)
 
     for i, name in enumerate(algorithm_names):
         rolling_avg = pd.Series(avg_bernoulli_metrics[i]).rolling(window=rolling_avg_window).mean()
@@ -251,6 +253,11 @@ def plot_bernoulli_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1):
             plt.plot(avg_bernoulli_metrics[i], alpha=0.2, color=colors[i])
         else:
             plt.plot(avg_bernoulli_metrics[i], label=f"{name}")
+        if plot_std:
+            plt.fill_between(range(len(avg_bernoulli_metrics[i])),
+                             avg_bernoulli_metrics[i] - 1.96 * std_bernoulli_metrics[i] / np.sqrt(num_runs),
+                             avg_bernoulli_metrics[i] + 1.96 * std_bernoulli_metrics[i] / np.sqrt(num_runs),
+                             alpha=0.2, color=colors[i])
 
     plt.title("Bernoulli metric")
     plt.xlabel("Time steps")
@@ -259,10 +266,11 @@ def plot_bernoulli_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1):
     plt.show()
 
 
-def plot_jaccard_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1):
+def plot_jaccard_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1, plot_std=False):
     """
     Plot the evolution of the Jaccard metric. The Jaccard metric is the Jaccard similarity between the set of Pareto optimal arms and the set of arms recommended by the algorithm.
     The x-axis represents the time steps and the y-axis represents the Jaccard metric. The metric is averaged over the experiments.
+    :param plot_std: Whether to plot the standard deviation of the Jaccard metric.
     :param file: The file containing the experimental results.
     :param num_runs: The number of runs of the experiment.
     :param num_arm_pulls: The number of arm pulls in each run of the experiment.
@@ -272,8 +280,9 @@ def plot_jaccard_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1):
     result_df = pd.read_csv(file, header=None)
     algorithm_names = result_df[0].unique()
     num_algorithms = len(algorithm_names)
-    jaccard_metrics = result_df.values[:, 4].reshape(num_algorithms, num_runs, num_arm_pulls)
+    jaccard_metrics = result_df.values[:, 4].reshape(num_algorithms, num_runs, num_arm_pulls).astype(np.float64)
     avg_jaccard_metrics = np.mean(jaccard_metrics, axis=1)
+    std_jaccard_metrics = np.std(jaccard_metrics, axis=1)
 
     for i, name in enumerate(algorithm_names):
         rolling_avg = pd.Series(avg_jaccard_metrics[i]).rolling(window=rolling_avg_window).mean()
@@ -282,6 +291,11 @@ def plot_jaccard_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1):
             plt.plot(avg_jaccard_metrics[i], alpha=0.2, color=colors[i])
         else:
             plt.plot(avg_jaccard_metrics[i], label=f"{name}")
+        if plot_std:
+            plt.fill_between(range(len(avg_jaccard_metrics[i])),
+                             avg_jaccard_metrics[i] - 1.96 * std_jaccard_metrics[i] / np.sqrt(num_runs),
+                             avg_jaccard_metrics[i] + 1.96 * std_jaccard_metrics[i] / np.sqrt(num_runs),
+                             alpha=0.2, color=colors[i])
 
     plt.title("Jaccard metric")
     plt.xlabel("Time steps")
@@ -290,10 +304,11 @@ def plot_jaccard_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1):
     plt.show()
 
 
-def plot_hypervolume(file, num_runs, num_arm_pulls, rolling_avg_window=1):
+def plot_hypervolume(file, num_runs, num_arm_pulls, rolling_avg_window=1, plot_std=False):
     """
     Plot the evolution of the hypervolume metric. The hypervolume metric is the hypervolume of the arms recommended by the algorithm.
     The x-axis represents the time steps and the y-axis represents the hypervolume metric. The metric is averaged over the experiments.
+    :param plot_std: Whether to plot the standard deviation of the hypervolume metric.
     :param file: The file containing the experimental results.
     :param num_runs: The number of runs of the experiment.
     :param num_arm_pulls: The number of arm pulls in each run of the experiment.
@@ -303,8 +318,9 @@ def plot_hypervolume(file, num_runs, num_arm_pulls, rolling_avg_window=1):
     result_df = pd.read_csv(file, header=None)
     algorithm_names = result_df[0].unique()
     num_algorithms = len(algorithm_names)
-    hypervolumes = result_df.values[:, 5].reshape(num_algorithms, num_runs, num_arm_pulls)
+    hypervolumes = result_df.values[:, 5].reshape(num_algorithms, num_runs, num_arm_pulls).astype(np.float64)
     avg_hypervolumes = np.mean(hypervolumes, axis=1)
+    std_hyper_volumes = np.std(hypervolumes, axis=1)
 
     for i, name in enumerate(algorithm_names):
         rolling_avg = pd.Series(avg_hypervolumes[i]).rolling(window=rolling_avg_window).mean()
@@ -313,6 +329,11 @@ def plot_hypervolume(file, num_runs, num_arm_pulls, rolling_avg_window=1):
             plt.plot(avg_hypervolumes[i], alpha=0.2, color=colors[i])
         else:
             plt.plot(avg_hypervolumes[i], label=f"{name}")
+        if plot_std:
+            plt.fill_between(range(len(avg_hypervolumes[i])),
+                             avg_hypervolumes[i] - 1.96 * std_hyper_volumes[i] / np.sqrt(num_runs),
+                             avg_hypervolumes[i] + 1.96 * std_hyper_volumes[i] / np.sqrt(num_runs),
+                             alpha=0.2, color=colors[i])
 
     plt.title("Hypervolume metric")
     plt.xlabel("Time steps")
@@ -322,6 +343,6 @@ def plot_hypervolume(file, num_runs, num_arm_pulls, rolling_avg_window=1):
 
 
 if __name__ == "__main__":
-    plot_bernoulli_metric("results/PFI_results.csv", 100, 2000, rolling_avg_window=1)
-    plot_jaccard_metric("results/PFI_results.csv", 100, 2000, rolling_avg_window=1)
-    plot_hypervolume("results/PFI_results.csv", 100, 2000, rolling_avg_window=1)
+    # plot_bernoulli_metric("results/PFI_results.csv", 100, 5000, rolling_avg_window=1, plot_std=True)
+    # plot_jaccard_metric("results/PFI_results.csv", 100, 5000, rolling_avg_window=1, plot_std=True)
+    plot_hypervolume("results/PFI_results.csv", 100, 5000, rolling_avg_window=1, plot_std=True)
