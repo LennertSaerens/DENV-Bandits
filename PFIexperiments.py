@@ -14,9 +14,11 @@ arms = pareto_optimal_arms + suboptimal_arms
 pareto_indices = [arms.index(arm) for arm in pareto_optimal_arms]
 std = 1
 
+# transform each arm by inverting all the means
+inverted_arms = [(5 - arm[0], 5 - arm[1]) for arm in arms]
 
 num_runs = 100
-horizon = 2_000
+horizon = 5_000
 
 
 def pull_arm(arm):
@@ -49,8 +51,8 @@ def calc_hypervolume(recommended):
     :param recommended: The recommended arms.
     :return: The hypervolume.
     """
-    ref_point = np.array([0, 0])
-    F = np.array([arms[arm] for arm in recommended])
+    ref_point = np.array([6, 6])
+    F = np.array([inverted_arms[arm] for arm in recommended])
     ind = HV(ref_point=ref_point)
     hv = ind.do(F)
     return hv
@@ -95,5 +97,5 @@ def run_PFI_experiment(num_arms, num_objectives, arms, pareto_arms, results_file
 
 
 if __name__ == '__main__':
-    # plot_arms_PFI_setting(arms, pareto_indices, std)
+    # plot_arms_PFI_setting(inverted_arms, pareto_indices, std)
     run_PFI_experiment(len(arms), 2, arms, pareto_indices, "results/PFI_results.csv", write=True)
