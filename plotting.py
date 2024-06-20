@@ -9,7 +9,9 @@ plt.rcParams.update({'font.size': 16})
 # Change the font to a fancy serif font for use in a latex document
 plt.rcParams.update({'font.family': 'serif'})
 
-colors = ["tab:blue", "tab:orange", "tab:green", "tab:red", "tab:purple", "tab:brown", "tab:pink", "tab:gray", "tab:olive", "tab:cyan"]
+colors = ["tab:blue", "tab:orange", "tab:green", "tab:red", "tab:purple", "tab:brown", "tab:pink", "tab:gray",
+          "tab:olive", "tab:cyan"]
+
 
 def plot_regrets(setup_dict):
     """
@@ -76,6 +78,30 @@ def plot_arms_pareto_front(arms, pareto_indices, plot_stds=False):
     plt.xlabel("Hospitalizations")
     plt.ylabel("Costs")
     plt.title("Arms in the 2D objective space")
+    plt.show()
+
+
+def plot_arms_PFI_setting(arms, pareto_indices, std, plot_stds=True):
+    """
+    Create a scatter plot of the arms. Pareto optimal arms are plotted in green, others in blue. The standard deviation is plotted as an ellipse around the mean.
+    :param arms: The list of arms. [(mean1, mean2), ...]
+    :param pareto_indices: The indices of the Pareto optimal arms.
+    :param std: The standard deviation of the arms.
+    :param plot_stds: Whether to plot the standard deviations as ellipses around the means.
+    :return:
+    """
+    plt.scatter([arm[0] for arm in arms], [arm[1] for arm in arms], color='blue')
+    for pareto_index in pareto_indices:
+        plt.scatter(arms[pareto_index][0], arms[pareto_index][1], color='green')
+    if plot_stds:
+        for arm in arms:
+            ellipse = Ellipse(arm, width=std, height=std, alpha=0.05)
+            plt.gca().add_patch(ellipse)
+    plt.scatter([], [], color='green', label='Pareto optimal arms')
+    plt.scatter([], [], color='blue', label='Suboptimal arms')
+    plt.xlabel("Objective 1")
+    plt.ylabel("Objective 2")
+    plt.title("Arms")
     plt.show()
 
 
@@ -214,7 +240,7 @@ def plot_bernoulli_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1):
     result_df = pd.read_csv(file, header=None)
     algorithm_names = result_df[0].unique()
     num_algorithms = len(algorithm_names)
-    bernoulli_metrics = result_df.values[:, 6].reshape(num_algorithms, num_runs, num_arm_pulls)
+    bernoulli_metrics = result_df.values[:, 3].reshape(num_algorithms, num_runs, num_arm_pulls)
     avg_bernoulli_metrics = np.mean(bernoulli_metrics, axis=1)
 
     for i, name in enumerate(algorithm_names):
@@ -245,7 +271,7 @@ def plot_jaccard_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1):
     result_df = pd.read_csv(file, header=None)
     algorithm_names = result_df[0].unique()
     num_algorithms = len(algorithm_names)
-    jaccard_metrics = result_df.values[:, 7].reshape(num_algorithms, num_runs, num_arm_pulls)
+    jaccard_metrics = result_df.values[:, 4].reshape(num_algorithms, num_runs, num_arm_pulls)
     avg_jaccard_metrics = np.mean(jaccard_metrics, axis=1)
 
     for i, name in enumerate(algorithm_names):
@@ -276,7 +302,7 @@ def plot_hypervolume(file, num_runs, num_arm_pulls, rolling_avg_window=1):
     result_df = pd.read_csv(file, header=None)
     algorithm_names = result_df[0].unique()
     num_algorithms = len(algorithm_names)
-    hypervolumes = result_df.values[:, 8].reshape(num_algorithms, num_runs, num_arm_pulls)
+    hypervolumes = result_df.values[:, 5].reshape(num_algorithms, num_runs, num_arm_pulls)
     avg_hypervolumes = np.mean(hypervolumes, axis=1)
 
     for i, name in enumerate(algorithm_names):
@@ -295,6 +321,6 @@ def plot_hypervolume(file, num_runs, num_arm_pulls, rolling_avg_window=1):
 
 
 if __name__ == "__main__":
-    # plot_bernoulli_metric("results/bandits/test.csv", 100, 250_000, rolling_avg_window=100)
-    plot_jaccard_metric("results/bandits/test.csv", 100, 250_000, rolling_avg_window=100)
-    plot_hypervolume("results/bandits/test.csv", 100, 250_000, rolling_avg_window=100)
+    plot_bernoulli_metric("results/PFI_results.csv", 100, 2000, rolling_avg_window=1)
+    plot_jaccard_metric("results/PFI_results.csv", 100, 2000, rolling_avg_window=1)
+    plot_hypervolume("results/PFI_results.csv", 100, 2000, rolling_avg_window=1)
