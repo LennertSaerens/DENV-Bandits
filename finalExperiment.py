@@ -21,16 +21,14 @@ normalized_monetary_cost = scaler.fit_transform(monetary_cost)
 
 inverted_arms = [(normalized_medical_burden[i][0], normalized_monetary_cost[i][0]) for i in
                  range(len(normalized_medical_burden))]
-print(inverted_arms)
 
 # Invert the data for maximization
 maximized_medical_burden = 1 - normalized_medical_burden
 maximized_monetary_cost = 1 - normalized_monetary_cost
 
 arms = [(maximized_medical_burden[i][0], maximized_monetary_cost[i][0]) for i in range(len(maximized_medical_burden))]
-print(arms)
 
-std = 0.1
+std = 0.01
 
 reference_point = np.array([1, 1])
 
@@ -119,4 +117,4 @@ def run_experiment(num_arms, num_objectives, arms, pareto_indices, results_file=
 
 
 if __name__ == '__main__':
-    run_experiment(len(arms), 2, arms, optimal_arms, results_file='results/finalstd1.csv', write=True)
+    run_experiment(len(arms), 2, arms, optimal_arms, results_file='results/finalstd01.csv', write=True)
