@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import matplotlib.patches as mpatches
 
 from matplotlib.patches import Ellipse, Patch
 
@@ -12,6 +13,44 @@ plt.rcParams.update({'font.family': 'serif'})
 
 colors = ["tab:blue", "tab:orange", "tab:green", "tab:red", "tab:purple", "tab:brown", "tab:pink", "tab:gray",
           "tab:olive", "tab:cyan"]
+
+
+def plot_vaccination_data(df, optimal_arms, annotate=False, connect_optimal_arms=False):
+    plt.rcParams.update({'font.size': 13})
+    plt.rcParams.update({'font.family': 'serif'})
+    # Define colors for groups of points
+    colors = ['black', 'indianred', 'lightcoral', 'moccasin', 'palegoldenrod', 'lemonchiffon', 'palegreen', 'lightcyan',
+              'paleturquoise', 'darkseagreen', 'lightskyblue', "palevioletred", "pink", "lavenderblush"]
+    color_index = 0
+    # Get the labels for the legend from the 'Description' column
+    labels = df['Description'].unique()
+    # Delete the NAN label
+    labels = labels[~pd.isnull(labels)]
+    legend_patches = [mpatches.Patch(color=colors[i], label=labels[i]) for i in range(len(labels))]
+
+    # Plot the first point in black
+    plt.scatter(df['Medical Burden'].iloc[0], df['Monetary Cost'].iloc[0], color="black")
+
+    # Plot the rest of the points in groups, changing colors every 4 points
+    for i in range(1, len(df)):
+        if i % 4 == 1:
+            color_index += 1
+        # annotate the points with their index if the annotate flag is set
+        if annotate:
+            plt.annotate(i, (df['Medical Burden'].iloc[i], df['Monetary Cost'].iloc[i]))
+        plt.scatter(df['Medical Burden'].iloc[i], df['Monetary Cost'].iloc[i], color=colors[color_index])
+
+    # Connect each optimal arm with the next one if the connect_optimal_arms flag is set
+    if connect_optimal_arms:
+        for i in range(len(optimal_arms) - 1):
+            plt.plot([df['Medical Burden'].iloc[optimal_arms[i]], df['Medical Burden'].iloc[optimal_arms[i + 1]]],
+                     [df['Monetary Cost'].iloc[optimal_arms[i]], df['Monetary Cost'].iloc[optimal_arms[i + 1]]],
+                     color='black', linestyle='dotted')
+
+    plt.xlabel('Medical Burden')
+    plt.ylabel('Monetary Cost')
+    plt.legend(handles=legend_patches, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=4)
+    plt.show()
 
 
 def plot_regrets(setup_dict):
@@ -268,7 +307,7 @@ def plot_bernoulli_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1, p
                              alpha=0.2, color=colors[i])
 
     plt.ylim(0, 1)
-    plt.title("Bernoulli metric")
+    # plt.title("Bernoulli metric")
     plt.xlabel("Time steps")
     plt.ylabel("Bernoulli metric")
     plt.legend()
@@ -307,7 +346,7 @@ def plot_jaccard_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1, plo
                              alpha=0.2, color=colors[i])
 
     plt.ylim(0, 1)
-    plt.title("Jaccard metric")
+    # plt.title("Jaccard metric")
     plt.xlabel("Time steps")
     plt.ylabel("Jaccard metric")
     plt.legend()
@@ -345,14 +384,14 @@ def plot_hypervolume(file, num_runs, num_arm_pulls, rolling_avg_window=1, plot_s
                              avg_hypervolumes[i] + 1.96 * std_hyper_volumes[i] / np.sqrt(num_runs),
                              alpha=0.2, color=colors[i])
 
-    plt.title("Hypervolume metric")
+    # plt.title("Hypervolume metric")
     plt.xlabel("Time steps")
-    plt.ylabel("Hypervolume")
+    plt.ylabel("Hypervolume metric")
     plt.legend()
     plt.show()
 
 
 if __name__ == "__main__":
-    plot_bernoulli_metric("results/PFI_results.csv", 100, 10_000, rolling_avg_window=1, plot_std=True)
-    plot_jaccard_metric("results/PFI_results.csv", 100, 10_000, rolling_avg_window=1, plot_std=True)
-    plot_hypervolume("results/PFI_results.csv", 100, 10_000, rolling_avg_window=1, plot_std=True)
+    plot_bernoulli_metric("results/final.csv", 100, 30_000, rolling_avg_window=1, plot_std=True)
+    plot_jaccard_metric("results/final.csv", 100, 30_000, rolling_avg_window=1, plot_std=True)
+    plot_hypervolume("results/final.csv", 100, 30_000, rolling_avg_window=1, plot_std=True)

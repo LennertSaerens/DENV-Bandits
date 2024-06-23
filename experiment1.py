@@ -1,5 +1,3 @@
-import matplotlib.patches as mpatches
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
@@ -9,6 +7,8 @@ from bandits.ThompsonSampling import NormalPTSBandit, NormalLSTSBandit
 from bandits.UCB import PUCB1Bandit, LSUCB1Bandit
 from main import calculate_unfairness_regret
 from plotting import plot_regrets, plot_arm_pulls
+
+from plotting import plot_vaccination_data
 
 # EXPERIMENTAL SETUP PARAMETERS
 num_runs = 10  # Number of experiments M
@@ -22,51 +22,8 @@ medical_error = 1000
 monetary_error = 0.1
 num_objectives = 2
 
-
-# VISUALIZATION OF THE DATAFRAME
-def plot_vaccination_data(df, annotate=False, connect_optimal_arms=False):
-    plt.rcParams.update({'font.size': 13})
-    plt.rcParams.update({'font.family': 'serif'})
-    # Define colors for groups of points
-    colors = ['black', 'indianred', 'lightcoral', 'moccasin', 'palegoldenrod', 'lemonchiffon', 'palegreen', 'lightcyan',
-              'paleturquoise', 'darkseagreen', 'lightskyblue', "palevioletred", "pink", "lavenderblush"]
-    color_index = 0
-    # Get the labels for the legend from the 'Description' column
-    labels = df['Description'].unique()
-    # Delete the NAN label
-    labels = labels[~pd.isnull(labels)]
-    legend_patches = [mpatches.Patch(color=colors[i], label=labels[i]) for i in range(len(labels))]
-
-    # Plot the first point in black
-    plt.scatter(df['Medical Burden'].iloc[0], df['Monetary Cost'].iloc[0], color="black")
-
-    # Plot the rest of the points in groups, changing colors every 4 points
-    for i in range(1, len(df)):
-        if i % 4 == 1:
-            color_index += 1
-        # annotate the points with their index if the annotate flag is set
-        if annotate:
-            plt.annotate(i, (df['Medical Burden'].iloc[i], df['Monetary Cost'].iloc[i]))
-        plt.scatter(df['Medical Burden'].iloc[i], df['Monetary Cost'].iloc[i], color=colors[color_index])
-
-    # Connect each optimal arm with the next one if the connect_optimal_arms flag is set
-    if connect_optimal_arms:
-        for i in range(len(optimal_arms) - 1):
-            plt.plot([df['Medical Burden'].iloc[optimal_arms[i]], df['Medical Burden'].iloc[optimal_arms[i + 1]]],
-                     [df['Monetary Cost'].iloc[optimal_arms[i]], df['Monetary Cost'].iloc[optimal_arms[i + 1]]],
-                     color='black', linestyle='dotted')
-
-    plt.xlabel('Medical Burden')
-    plt.ylabel('Monetary Cost')
-    plt.legend(handles=legend_patches, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=4)
-    plt.show()
-    # Reset font size and family
-    plt.rcParams.update({'font.size': 10})
-    plt.rcParams.update({'font.family': 'sans-serif'})
-
-
 # Visualize the untransformed data
-plot_vaccination_data(experiment_data, annotate=True, connect_optimal_arms=True)
+plot_vaccination_data(experiment_data, optimal_arms, annotate=True, connect_optimal_arms=True)
 
 # TRANSFORMING THE DATA
 
@@ -83,7 +40,7 @@ experiment_data['Medical Burden'] = 1 / experiment_data['Medical Burden']
 experiment_data['Monetary Cost'] = 1 / experiment_data['Monetary Cost']
 
 # Visualize the transformed data
-plot_vaccination_data(experiment_data, annotate=True, connect_optimal_arms=True)
+plot_vaccination_data(experiment_data, optimal_arms, annotate=True, connect_optimal_arms=True)
 
 arms = [(experiment_data['Medical Burden'][i], experiment_data['Monetary Cost'][i]) for i in
         range(len(experiment_data))]
@@ -202,6 +159,6 @@ def run_experiment(num_arms, num_objectives, arms, pareto_arms, weights, log=Fal
     plot_arm_pulls(setup, pareto_arms, horizon)
 
 
-if __name__ == '__main__':
-    # Run the experiment
-    run_experiment(num_arms, num_objectives, arms, pareto_arms, weights)
+# if __name__ == '__main__':
+#     # Run the experiment
+#     run_experiment(num_arms, num_objectives, arms, pareto_arms, weights)
