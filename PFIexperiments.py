@@ -4,6 +4,7 @@ from pymoo.indicators.hv import HV
 from bandits.Annealing import APBandit
 from bandits.KnowledgeGradient import PKGBandit
 from bandits.ThompsonSampling import NormalPTSBandit
+from bandits.TTPFTS import NormalTTPFTSBandit
 from bandits.UCB import PUCB1Bandit
 
 from plotting import plot_arms_PFI_setting
@@ -72,6 +73,9 @@ def run_PFI_experiment(num_arms, num_objectives, arms, pareto_arms, results_file
         "Annealing Pareto": {
             "agent": APBandit(num_arms, num_objectives, horizon, 3, 1, 0.999),
         },
+        "TT PF Thompson Sampling": {
+            "agent": NormalTTPFTSBandit(num_arms, num_objectives),
+        },
     }
 
     for algorithm in setup:
@@ -98,4 +102,4 @@ def run_PFI_experiment(num_arms, num_objectives, arms, pareto_arms, results_file
 
 if __name__ == '__main__':
     # plot_arms_PFI_setting(inverted_arms, pareto_indices, std, reference_point=reference_point)
-    run_PFI_experiment(len(arms), 2, arms, pareto_indices, "results/PFI_results.csv", write=True)
+    run_PFI_experiment(len(arms), 2, arms, pareto_indices, "results/PFI_TTPFTS_results.csv", write=True)
