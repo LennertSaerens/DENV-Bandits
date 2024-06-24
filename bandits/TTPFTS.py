@@ -11,11 +11,12 @@ class TTPFTSBandit:
     multi-objective case: Pareto front identification.
     """
 
-    def __init__(self, num_arms, num_objectives):
+    def __init__(self, num_arms, num_objectives, p):
         self.num_arms = num_arms
         self.num_objectives = num_objectives
         self.alphas = np.ones((num_arms, num_objectives))
         self.betas = np.ones((num_arms, num_objectives))
+        self.p = p
 
     def choose_arm(self):
         """
@@ -24,7 +25,7 @@ class TTPFTSBandit:
         :return: The arm to pull.
         """
         pareto_indices = self.get_top_arms()
-        if np.random.random() < 0.5:
+        if np.random.random() < self.p:
             return random.choice(pareto_indices)
         else:
             non_pareto_indices = np.setdiff1d(np.arange(self.num_arms), pareto_indices)
@@ -68,13 +69,14 @@ class NormalTTPFTSBandit:
     Variant of the TTPFTSBandit that uses Normal-Inverse-Gamma Distribution instead of Beta.
     """
 
-    def __init__(self, num_arms, num_objectives):
+    def __init__(self, num_arms, num_objectives, p):
         self.num_arms = num_arms
         self.num_objectives = num_objectives
         self.mu = np.zeros((num_arms, num_objectives))  # mean
         self.lambdas = np.ones((num_arms, num_objectives))  # precision
         self.alpha = np.ones((num_arms, num_objectives))  # shape
         self.beta = np.ones((num_arms, num_objectives))  # scale
+        self.p = p
 
     def choose_arm(self):
         """
@@ -83,7 +85,7 @@ class NormalTTPFTSBandit:
         :return: The arm to pull.
         """
         pareto_indices = self.get_top_arms()
-        if np.random.random() < 0.5:
+        if np.random.random() < self.p:
             return random.choice(pareto_indices)
         else:
             non_pareto_indices = np.setdiff1d(np.arange(self.num_arms), pareto_indices)
