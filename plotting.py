@@ -12,7 +12,9 @@ plt.rcParams.update({'font.family': 'serif'})
 # plt.rcParams['figure.constrained_layout.use'] = True
 
 colors = ["tab:blue", "tab:orange", "tab:green", "tab:red", "tab:purple", "tab:brown", "tab:pink", "tab:gray",
-          "tab:olive", "tab:cyan"]
+          "tab:olive", "tab:cyan", 'black', 'indianred', 'lightcoral', 'moccasin', 'palegoldenrod', 'lemonchiffon',
+          'palegreen', 'lightcyan',
+          'paleturquoise', 'darkseagreen', 'lightskyblue', "palevioletred", "pink", "lavenderblush"]
 
 
 def plot_vaccination_data(df, optimal_arms, annotate=False, connect_optimal_arms=False):
@@ -137,16 +139,16 @@ def plot_arms_PFI_setting(arms, pareto_indices, std, plot_stds=True, reference_p
 
     if plot_stds:
         for arm in arms:
-            ellipse = Ellipse(arm, width=2*std, height=2*std, alpha=0.05)
+            ellipse = Ellipse(arm, width=2 * std, height=2 * std, alpha=0.05)
             plt.gca().add_patch(ellipse)
 
     if reference_point is not None:
         plt.scatter(reference_point[0], reference_point[1], color='tab:orange')
 
-    legend_patches = [Patch(color='tab:blue', label='Suboptimal arm'), Patch(color='tab:green', label='Pareto optimal arm'), Patch(color='tab:orange', label='Reference point')]
+    legend_patches = [Patch(color='tab:blue', label='Suboptimal arm'),
+                      Patch(color='tab:green', label='Pareto optimal arm'),
+                      Patch(color='tab:orange', label='Reference point')]
     plt.legend(handles=legend_patches, loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=3)
-
-
 
     plt.xlabel("Objective 1")
     plt.ylabel("Objective 2")
@@ -391,7 +393,26 @@ def plot_hypervolume(file, num_runs, num_arm_pulls, rolling_avg_window=1, plot_s
     plt.show()
 
 
+def plot_arm_pull_frequencies(file, num_runs, num_arm_pulls, optimal_arms, num_arms, algorithm):
+    result_df = pd.read_csv(file, header=None)
+    algorithm_results = result_df[result_df[0] == algorithm]
+    arm_pulled = algorithm_results.values[:, 6].reshape(num_runs, num_arm_pulls)
+    pulls_per_arm_per_run = np.zeros((num_runs, num_arms))
+    for i in range(num_runs):
+        for j in range(num_arm_pulls):
+            pulls_per_arm_per_run[i, arm_pulled[i, j]] += 1
+    avg_pulls_per_arm = np.mean(pulls_per_arm_per_run, axis=0) / num_arm_pulls
+    std_pulls_per_arm = np.std(pulls_per_arm_per_run, axis=0) / num_arm_pulls
+    bars = plt.bar(range(num_arms), avg_pulls_per_arm, yerr=1.96 * std_pulls_per_arm / np.sqrt(num_runs))
+    for i in optimal_arms:
+        bars[i].set_color('green')
+    plt.xlabel("Arm index")
+    plt.ylabel("Pull Frequency")
+    plt.show()
+
+
 if __name__ == "__main__":
-    plot_bernoulli_metric("results/final.csv", 100, 30_000, rolling_avg_window=1, plot_std=True)
-    plot_jaccard_metric("results/final.csv", 100, 30_000, rolling_avg_window=1, plot_std=True)
-    plot_hypervolume("results/final.csv", 100, 30_000, rolling_avg_window=1, plot_std=True)
+    # plot_bernoulli_metric("results/final_optmized_std5.csv", 100, 30_000, rolling_avg_window=1, plot_std=True)
+    # plot_jaccard_metric("results/final_optmized_std5.csv", 100, 30_000, rolling_avg_window=1, plot_std=True)
+    # plot_hypervolume("results/final_optmized_std5.csv", 100, 30_000, rolling_avg_window=1, plot_std=True)
+    plot_arm_pull_frequencies("results/final_optmized_std5.csv", 100, 30_000, [0, 5, 6, 8, 14, 30, 31, 32], 53, "Annealing Pareto")
