@@ -6,10 +6,9 @@ class APBandit:
     Implementation of the Annealing Pareto algorithm.
     From "Multivariate Normal Distribution Based Multi-Armed Bandits Pareto Algorithm" by Saba Q. Yahyaa, Madalina M. Drugan and Bernard Manderick
     """
-    def __init__(self, num_arms, num_objectives, timesteps, initialization_phases, epsilon, annealing_rate):
+    def __init__(self, num_arms, num_objectives, initialization_phases, epsilon, annealing_rate):
         self.num_arms = num_arms
         self.num_objectives = num_objectives
-        self.timesteps = timesteps
         self.initialization_phases = initialization_phases
         self.arm_means = np.zeros((num_arms, num_objectives))
         self.arm_stds = np.zeros((num_arms, num_objectives))
