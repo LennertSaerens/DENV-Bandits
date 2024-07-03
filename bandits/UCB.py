@@ -37,15 +37,24 @@ class PUCB1Bandit:
         self.n += 1
         return arm
 
+    # def get_top_arms(self):
+    #     """
+    #     Get the arms that are considered to be Pareto optimal by the bandit.
+    #     :return: The top arms.
+    #     """
+    #     ucb_values = self.arm_means + self.kappa * np.sqrt(
+    #         (2 * math.log(self.n * pow(self.num_objectives * self.num_arms, 1 / 4))) / self.arm_counts
+    #     )
+    #     is_strictly_worse = np.all(ucb_values[:, None, :] < ucb_values[None, :, :], axis=2)
+    #     pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
+    #     return pareto_indices
+
     def get_top_arms(self):
         """
-        Get the arms that are considered to be Pareto optimal by the bandit.
+        get the Pareto optimal arms based on the estimated arm means
         :return: The top arms.
         """
-        ucb_values = self.arm_means + self.kappa * np.sqrt(
-            (2 * math.log(self.n * pow(self.num_objectives * self.num_arms, 1 / 4))) / self.arm_counts
-        )
-        is_strictly_worse = np.all(ucb_values[:, None, :] < ucb_values[None, :, :], axis=2)
+        is_strictly_worse = np.all(self.arm_means[:, None, :] < self.arm_means[None, :, :], axis=2)
         pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
         return pareto_indices
 

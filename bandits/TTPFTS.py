@@ -84,7 +84,10 @@ class NormalTTPFTSBandit:
         in the non-Pareto optimal set and return one of them.
         :return: The arm to pull.
         """
-        pareto_indices = self.get_top_arms()
+        stds = stats.invgamma.rvs(self.alpha, scale=self.beta)
+        samples = np.random.normal(self.mu, stds / self.lambdas)
+        is_strictly_worse = np.all(samples[:, None, :] < samples[None, :, :], axis=2)
+        pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
         if np.random.random() < self.p:
             return random.choice(pareto_indices)
         else:
@@ -95,14 +98,23 @@ class NormalTTPFTSBandit:
             non_dominated_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
             return random.choice(non_dominated_indices)
 
+    # def get_top_arms(self):
+    #     """
+    #     Get the arms that are considered to be Pareto optimal by the bandit.
+    #     :return: The top arms.
+    #     """
+    #     stds = stats.invgamma.rvs(self.alpha, scale=self.beta)
+    #     samples = np.random.normal(self.mu, stds / self.lambdas)
+    #     is_strictly_worse = np.all(samples[:, None, :] < samples[None, :, :], axis=2)
+    #     pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
+    #     return pareto_indices
+
     def get_top_arms(self):
         """
-        Get the arms that are considered to be Pareto optimal by the bandit.
+        Get the arms that are considered to be Pareto optimal by the bandit based on the estimated means
         :return: The top arms.
         """
-        stds = stats.invgamma.rvs(self.alpha, scale=self.beta)
-        samples = np.random.normal(self.mu, stds / self.lambdas)
-        is_strictly_worse = np.all(samples[:, None, :] < samples[None, :, :], axis=2)
+        is_strictly_worse = np.all(self.mu[:, None, :] < self.mu[None, :, :], axis=2)
         pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
         return pareto_indices
 

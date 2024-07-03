@@ -52,17 +52,26 @@ class PKGBandit:
         self.t += 1
         return arm
 
+    # def get_top_arms(self):
+    #     """
+    #     Get the arms that are considered to be Pareto optimal by the bandit.
+    #     :return: The top arms.
+    #     """
+    #     kg_values = self.arm_means + (
+    #             (self.timesteps - self.t) *
+    #             (self.num_arms * self.num_objectives) *
+    #             (self.arm_stds / np.sqrt(self.arm_pulls)) * x(-np.abs((self.arm_means - np.max(self.arm_means)) / (self.arm_stds / np.sqrt(self.arm_pulls))))
+    #     )
+    #     is_strictly_worse = np.all(kg_values[:, None, :] < kg_values[None, :, :], axis=2)
+    #     pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
+    #     return pareto_indices
+
     def get_top_arms(self):
         """
-        Get the arms that are considered to be Pareto optimal by the bandit.
+        get the Pareto optimal arms based on the estimated arm means
         :return: The top arms.
         """
-        kg_values = self.arm_means + (
-                (self.timesteps - self.t) *
-                (self.num_arms * self.num_objectives) *
-                (self.arm_stds / np.sqrt(self.arm_pulls)) * x(-np.abs((self.arm_means - np.max(self.arm_means)) / (self.arm_stds / np.sqrt(self.arm_pulls))))
-        )
-        is_strictly_worse = np.all(kg_values[:, None, :] < kg_values[None, :, :], axis=2)
+        is_strictly_worse = np.all(self.arm_means[:, None, :] < self.arm_means[None, :, :], axis=2)
         pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
         return pareto_indices
 

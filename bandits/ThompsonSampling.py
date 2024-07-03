@@ -145,14 +145,23 @@ class NormalPTSBandit:
         pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
         return random.choice(pareto_indices)
 
+    # def get_top_arms(self):
+    #     """
+    #     Get the arms that are considered to be Pareto optimal by the bandit.
+    #     :return: The top arms.
+    #     """
+    #     stds = stats.invgamma.rvs(self.alpha, scale=self.beta)
+    #     samples = np.random.normal(self.mu, stds / self.precision)
+    #     is_strictly_worse = np.all(samples[:, None, :] < samples[None, :, :], axis=2)
+    #     pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
+    #     return pareto_indices
+
     def get_top_arms(self):
         """
-        Get the arms that are considered to be Pareto optimal by the bandit.
+        get the Pareto optimal arms based on the estimated arm means
         :return: The top arms.
         """
-        stds = stats.invgamma.rvs(self.alpha, scale=self.beta)
-        samples = np.random.normal(self.mu, stds / self.precision)
-        is_strictly_worse = np.all(samples[:, None, :] < samples[None, :, :], axis=2)
+        is_strictly_worse = np.all(self.mu[:, None, :] < self.mu[None, :, :], axis=2)
         pareto_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
         return pareto_indices
 
