@@ -1,3 +1,5 @@
+import array
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -355,7 +357,7 @@ def plot_jaccard_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1, plo
     plt.show()
 
 
-def plot_hypervolume(file, num_runs, num_arm_pulls, rolling_avg_window=1, plot_std=False):
+def plot_hypervolume(file, num_runs, num_arm_pulls, y_low_lim, y_up_lim, rolling_avg_window=1, plot_std=False):
     """
     Plot the evolution of the hypervolume metric. The hypervolume metric is the hypervolume of the arms recommended by the algorithm.
     The x-axis represents the time steps and the y-axis represents the hypervolume metric. The metric is averaged over the experiments.
@@ -386,6 +388,8 @@ def plot_hypervolume(file, num_runs, num_arm_pulls, rolling_avg_window=1, plot_s
                              avg_hypervolumes[i] + 1.96 * std_hyper_volumes[i] / np.sqrt(num_runs),
                              alpha=0.2, color=colors[i])
 
+    plt.ylim(y_low_lim, y_up_lim)
+
     # plt.title("Hypervolume metric")
     plt.xlabel("Time steps")
     plt.ylabel("Hypervolume metric")
@@ -411,8 +415,28 @@ def plot_arm_pull_frequencies(file, num_runs, num_arm_pulls, optimal_arms, num_a
     plt.show()
 
 
+def plot_arm_rec_frequencies(file, num_runs, num_arm_pulls, optimal_arms, num_arms, algorithm):
+    result_df = pd.read_csv(file, header=None, low_memory=False)
+    algorithm_results = result_df[result_df[0] == algorithm]
+    arms_recommended = algorithm_results.values[:, 1].reshape(num_runs, num_arm_pulls)
+    recommendations_per_arm_per_run = np.zeros((num_runs, num_arms))
+    for i in range(num_runs):
+        for j in range(num_arm_pulls):
+            rec = arms_recommended[i, j][1:-1].split()
+            for arm in rec:
+                recommendations_per_arm_per_run[i, int(arm)] += 1
+    avg_recommendations_per_arm = np.mean(recommendations_per_arm_per_run, axis=0)
+    std_recommendations_per_arm = np.std(recommendations_per_arm_per_run, axis=0)
+    bars = plt.bar(range(num_arms), avg_recommendations_per_arm, yerr=1.96 * std_recommendations_per_arm / np.sqrt(num_runs))
+    for i in optimal_arms:
+        bars[i].set_color('green')
+    plt.xlabel("Arm index")
+    plt.ylabel("Recommendations")
+    plt.show()
+
+
 if __name__ == "__main__":
-    # plot_bernoulli_metric("results/final_optmized_std5.csv", 100, 30_000, rolling_avg_window=1, plot_std=True)
-    # plot_jaccard_metric("results/final_optmized_std5.csv", 100, 30_000, rolling_avg_window=1, plot_std=True)
-    # plot_hypervolume("results/final_optmized_std5.csv", 100, 30_000, rolling_avg_window=1, plot_std=True)
-    plot_arm_pull_frequencies("results/final_optmized_std5.csv", 100, 30_000, [0, 5, 6, 8, 14, 30, 31, 32], 53, "Annealing Pareto")
+    plot_bernoulli_metric("results/.csv", 25, 30_000, rolling_avg_window=1, plot_std=True)
+    plot_jaccard_metric("results/Annealing_hypers.csv", 25, 30_000, rolling_avg_window=1, plot_std=True)
+    plot_hypervolume("results/Annealing_hypers.csv", 25, 30_000, 9_200, 9_350, rolling_avg_window=1, plot_std=True)
+    # plot_arm_rec_frequencies("results/final_optmized_std5_recs.csv", 100, 30_000, [0, 5, 6, 8, 14, 30, 31, 32], 53, "Annealing Pareto")
