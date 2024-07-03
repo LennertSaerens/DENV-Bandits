@@ -92,9 +92,8 @@ class NormalTTPFTSBandit:
             return random.choice(pareto_indices)
         else:
             non_pareto_indices = np.setdiff1d(np.arange(self.num_arms), pareto_indices)
-            stds = stats.invgamma.rvs(self.alpha[non_pareto_indices], scale=self.beta[non_pareto_indices])
-            samples = np.random.normal(self.mu[non_pareto_indices], stds / self.lambdas[non_pareto_indices])
-            is_strictly_worse = np.all(samples[:, None, :] < samples[None, :, :], axis=2)
+            non_pareto_samples = samples[non_pareto_indices]
+            is_strictly_worse = np.all(non_pareto_samples[:, None, :] < non_pareto_samples[None, :, :], axis=2)
             non_dominated_indices = np.where(~np.any(is_strictly_worse, axis=1))[0]
             return random.choice(non_dominated_indices)
 
