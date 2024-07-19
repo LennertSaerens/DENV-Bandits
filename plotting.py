@@ -314,7 +314,7 @@ def plot_bernoulli_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1, p
     # plt.title("Bernoulli metric")
     plt.xlabel("Time steps")
     plt.ylabel("Bernoulli metric")
-    plt.legend()
+    plt.legend(loc='lower right')
     plt.show()
 
 
@@ -353,7 +353,7 @@ def plot_jaccard_metric(file, num_runs, num_arm_pulls, rolling_avg_window=1, plo
     # plt.title("Jaccard metric")
     plt.xlabel("Time steps")
     plt.ylabel("Jaccard metric")
-    plt.legend()
+    plt.legend(loc='lower right')
     plt.show()
 
 
@@ -393,7 +393,7 @@ def plot_hypervolume(file, num_runs, num_arm_pulls, y_low_lim, y_up_lim, rolling
     # plt.title("Hypervolume metric")
     plt.xlabel("Time steps")
     plt.ylabel("Hypervolume metric")
-    plt.legend()
+    plt.legend(loc='lower right')
     plt.show()
 
 
@@ -411,7 +411,7 @@ def plot_arm_pull_frequencies(file, num_runs, num_arm_pulls, optimal_arms, num_a
     for i in optimal_arms:
         bars[i].set_color('green')
     plt.xlabel("Arm index")
-    plt.ylabel("Pull Frequency")
+    plt.ylabel("Pull frequency")
     plt.show()
 
 
@@ -425,18 +425,22 @@ def plot_arm_rec_frequencies(file, num_runs, num_arm_pulls, optimal_arms, num_ar
             rec = arms_recommended[i, j][1:-1].split()
             for arm in rec:
                 recommendations_per_arm_per_run[i, int(arm)] += 1
-    avg_recommendations_per_arm = np.mean(recommendations_per_arm_per_run, axis=0)
-    std_recommendations_per_arm = np.std(recommendations_per_arm_per_run, axis=0)
+    recommendations_per_run = np.sum(recommendations_per_arm_per_run, axis=1)
+    avg_recommendations_per_run = np.mean(recommendations_per_run)
+    avg_recommendations_per_arm = np.mean(recommendations_per_arm_per_run, axis=0) / avg_recommendations_per_run
+    std_recommendations_per_arm = np.std(recommendations_per_arm_per_run, axis=0) / avg_recommendations_per_run
     bars = plt.bar(range(num_arms), avg_recommendations_per_arm, yerr=1.96 * std_recommendations_per_arm / np.sqrt(num_runs))
     for i in optimal_arms:
         bars[i].set_color('green')
+    plt.xticks(range(0, num_arms, 5))
     plt.xlabel("Arm index")
-    plt.ylabel("Recommendations")
+    plt.ylabel("Recommendation frequency")
     plt.show()
 
 
 if __name__ == "__main__":
-    plot_bernoulli_metric("results/.csv", 25, 30_000, rolling_avg_window=1, plot_std=True)
-    plot_jaccard_metric("results/Annealing_hypers.csv", 25, 30_000, rolling_avg_window=1, plot_std=True)
-    plot_hypervolume("results/Annealing_hypers.csv", 25, 30_000, 9_200, 9_350, rolling_avg_window=1, plot_std=True)
-    # plot_arm_rec_frequencies("results/final_optmized_std5_recs.csv", 100, 30_000, [0, 5, 6, 8, 14, 30, 31, 32], 53, "Annealing Pareto")
+    plot_bernoulli_metric("results/TTPFTS_hypers.csv", 25, 30_000, rolling_avg_window=1, plot_std=True)
+    plot_jaccard_metric("results/TTPFTS_hypers.csv", 25, 30_000, rolling_avg_window=1, plot_std=True)
+    plot_hypervolume("results/TTPFTS_hypers.csv", 25, 30_000, 9_200, 9_310, rolling_avg_window=1, plot_std=True)
+    # for algorithm in ["Pareto UCB1", "Pareto Thompson Sampling", "Pareto Knowledge Gradient", "Annealing Pareto", "TTPFTS"]:
+    #     plot_arm_rec_frequencies("results/finalV2_recs.csv", 100, 30_000, [0, 5, 6, 8, 14, 30, 31, 32], 53, algorithm)
