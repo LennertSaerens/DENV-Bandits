@@ -20,7 +20,7 @@ class TTPFTSBandit:
 
     def choose_arm(self):
         """
-        Find all Pareto optimal arms. With a chance of 1/2, return one of them. Otherwise, find the non-dominated arms
+        Find all Pareto optimal arms. With a chance of p, return one of them. Otherwise, find the non-dominated arms
         in the non-Pareto optimal set and return one of them.
         :return: The arm to pull.
         """
@@ -80,7 +80,7 @@ class NormalTTPFTSBandit:
 
     def choose_arm(self):
         """
-        Find all Pareto optimal arms. With a chance of 1/2, return one of them. Otherwise, find the non-dominated arms
+        Find all Pareto optimal arms. With a chance of p, return one of them. Otherwise, find the non-dominated arms
         in the non-Pareto optimal set and return one of them.
         :return: The arm to pull.
         """
